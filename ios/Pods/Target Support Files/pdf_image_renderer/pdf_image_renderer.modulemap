@@ -1,0 +1,6 @@
+framework module pdf_image_renderer {
+  umbrella header "pdf_image_renderer-umbrella.h"
+
+  export *
+  module * { export * }
+}

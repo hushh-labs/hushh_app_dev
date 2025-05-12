@@ -1,0 +1,10 @@
+{
+  "razorpay_key": "rzp_test_Bq6Zx6GiZR6jFC",
+  "wire_dash_project_id": "hushh-v9j0bjp",
+  "wire_dash_secret": "w5GgDMoYcOprxVxZtmzhD5HO6u0gFvAm",
+  "supabase_url": "https://rpmzykoxqnbozgdoqbpc.supabase.co",
+  "supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwbXp5a294cW5ib3pnZG9xYnBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE5Mjc5NzEsImV4cCI6MjAxNzUwMzk3MX0.3GwG8YQKwZSWfGgTBEEA47YZAZ-Nr4HiirYPWiZtpZ0",
+  "stripe_publishable_key": "pk_test_51M2VQ0LYaD0u4Aj1Lk52Llyvs2dEiAuHruJjekvpsSZTfzO3V0bQgXAfrg3I0IiP03jDec9xxttaX7MaPc8xlq1F00WzM73O02",
+  "base_url": "https://receipt-radar-27-jul-1-yxfa6ba3aq-uc.a.run.app",
+  "gemini_api_key": "AIzaSyCbA2GrTP_KUOfO_-crlnUjuhjJQUuVkFw"
+}

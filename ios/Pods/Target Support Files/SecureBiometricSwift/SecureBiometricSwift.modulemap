@@ -1,0 +1,6 @@
+framework module SecureBiometricSwift {
+  umbrella header "SecureBiometricSwift-umbrella.h"
+
+  export *
+  module * { export * }
+}

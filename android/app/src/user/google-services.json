@@ -1,0 +1,363 @@
+{
+  "project_info": {
+    "project_number": "53407187172",
+    "firebase_url": "https://hushone-app-default-rtdb.firebaseio.com",
+    "project_id": "hushone-app",
+    "storage_bucket": "hushone-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53407187172:android:aafcf8636bb23a5ab32cf1",
+        "android_client_info": {
+          "package_name": "com.example.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53407187172-2rm5pt9qu156jk0oi33i4jeh0c783np1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcFDiD_GotGnPhjCso9tHCHievk1putmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53407187172-283soe7ku29rkrmch51r1d7rkghmpie3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53407187172-9qmvd3795hrvrg6osok2dg7f1odmkulg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hushh.concierge.hushhConcierge"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53407187172:android:65314c224f244c24b32cf1",
+        "android_client_info": {
+          "package_name": "com.hush1one"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53407187172-2rm5pt9qu156jk0oi33i4jeh0c783np1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcFDiD_GotGnPhjCso9tHCHievk1putmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53407187172-283soe7ku29rkrmch51r1d7rkghmpie3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53407187172-9qmvd3795hrvrg6osok2dg7f1odmkulg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hushh.concierge.hushhConcierge"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53407187172:android:84db1aafa29ce888b32cf1",
+        "android_client_info": {
+          "package_name": "com.hushhone.hushh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53407187172-do6lptkgs1ongd0amelo2k3rb461jm2s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hushhone.hushh",
+            "certificate_hash": "27c65f475bf4ba5b680f3c14c0a113dbfd23d23b"
+          }
+        },
+        {
+          "client_id": "53407187172-inj7ean8nrd2jj49o05skppbflg3s1fu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hushhone.hushh",
+            "certificate_hash": "479729cd430b3134fb8eda075cff48a7d8e36a4b"
+          }
+        },
+        {
+          "client_id": "53407187172-l18p7mgpknafmb3aiq79olae3i72vlbv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hushhone.hushh",
+            "certificate_hash": "fc5a645111d1fe6d0a2c785487e3f3302567e5be"
+          }
+        },
+        {
+          "client_id": "53407187172-2rm5pt9qu156jk0oi33i4jeh0c783np1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcFDiD_GotGnPhjCso9tHCHievk1putmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53407187172-283soe7ku29rkrmch51r1d7rkghmpie3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53407187172-9qmvd3795hrvrg6osok2dg7f1odmkulg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hushh.concierge.hushhConcierge"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53407187172:android:1a35dd5dfc9208a1b32cf1",
+        "android_client_info": {
+          "package_name": "com.hushhone.hushh.agent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53407187172-2rm5pt9qu156jk0oi33i4jeh0c783np1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcFDiD_GotGnPhjCso9tHCHievk1putmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53407187172-283soe7ku29rkrmch51r1d7rkghmpie3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53407187172-9qmvd3795hrvrg6osok2dg7f1odmkulg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hushh.concierge.hushhConcierge"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53407187172:android:ff873830a851797ab32cf1",
+        "android_client_info": {
+          "package_name": "com.hushhone.hushh.hushh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53407187172-2rm5pt9qu156jk0oi33i4jeh0c783np1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcFDiD_GotGnPhjCso9tHCHievk1putmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53407187172-283soe7ku29rkrmch51r1d7rkghmpie3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53407187172-9qmvd3795hrvrg6osok2dg7f1odmkulg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hushh.concierge.hushhConcierge"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53407187172:android:d581b3c97819a156b32cf1",
+        "android_client_info": {
+          "package_name": "hush1one.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53407187172-0h9ckq232jev9dd2u8re190pck2kku3o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "479729cd430b3134fb8eda075cff48a7d8e36a4b"
+          }
+        },
+        {
+          "client_id": "53407187172-3cio6s9qmie7skmc6udpmfb2unmvv3l3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "016e03394854654281eb4b12c6dcafb7b8844ab4"
+          }
+        },
+        {
+          "client_id": "53407187172-3qvq2caepehuntfb3c71k8g3j6n14pnt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "af3ca200e93c29d897770492020d5f37e10a2ba3"
+          }
+        },
+        {
+          "client_id": "53407187172-6dessiu813dle34re7ecutjriv7tgf4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "c59ff0346a00ee66ea9c19fac713227b27767522"
+          }
+        },
+        {
+          "client_id": "53407187172-8uhc9l4sjmb6da6ilkgg7de104gk660r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "f1443299f3512e5c013474e7769450757270eacb"
+          }
+        },
+        {
+          "client_id": "53407187172-ahmh42g8vsn5mhsusaeq412gtelmpmt9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "7754f9493ad995b0cd0899cee472bc5a39efbc94"
+          }
+        },
+        {
+          "client_id": "53407187172-argpqbbet44ppoda3midbhvq997e6mg7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "5c227adb9752a697767d16a9fb48a73d454f65f7"
+          }
+        },
+        {
+          "client_id": "53407187172-au2b5d4ulumm639jrm78bp9dj8fac4hk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "7024934247a1183338900326ae2c143eec902328"
+          }
+        },
+        {
+          "client_id": "53407187172-ieu2t695s54f8vs24632ev1uq7bfg660.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "6be2c9035ce24241951ff0da86ed12172678bd49"
+          }
+        },
+        {
+          "client_id": "53407187172-o9l9jid9f5c4p232o2vvqe9slt030fsh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "9bea7961f801522fa3749708224372919bab9bca"
+          }
+        },
+        {
+          "client_id": "53407187172-pqjnegoemn50iou1tskvutekfij1n94i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "2e04480adf37df0376a9386c213c00faa392a397"
+          }
+        },
+        {
+          "client_id": "53407187172-qmgmqf2k9miias551cbpcuufojovrv4a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "4732bceca0a6bd60a972f5b22a289a6eb1111d71"
+          }
+        },
+        {
+          "client_id": "53407187172-ugehofohjdavn92cnpal8rktpdov6ki1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "e9e983c1f5049d483357c611604642d65e74c13d"
+          }
+        },
+        {
+          "client_id": "53407187172-v9ddlmpq0jcdnqjsoffia2gr2au213hu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hush1one.com",
+            "certificate_hash": "ccab4c74aab32f51a5b98d9e01ddf339fb89c058"
+          }
+        },
+        {
+          "client_id": "53407187172-2rm5pt9qu156jk0oi33i4jeh0c783np1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcFDiD_GotGnPhjCso9tHCHievk1putmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53407187172-283soe7ku29rkrmch51r1d7rkghmpie3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "53407187172-9qmvd3795hrvrg6osok2dg7f1odmkulg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hushh.concierge.hushhConcierge"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,36 @@
+class AppIcons {
+  static const String root = 'assets';
+  static const String plusBlue = '$root/add_svg_gradient.svg';
+  static const String cameraBlue = '$root/camera 1.svg';
+  static const String backArrow = '$root/backArrow.png';
+  static const String backArrow_narrow = '$root/backarrow_narrow.svg';
+  static const String eyeBlueSvg = '$root/eyeBlueSvg.svg';
+  static const String muteIcon = '$root/mute.svg';
+  static const String blockIcon = '$root/block.svg';
+  static const String docu_blu2 = '$root/docu_blue.svg';
+  static const String ppt_icon = '$root/ppt_icon.svg';
+  static const String doc_image = '$root/doc_image.svg';
+  static const String pause = '$root/pause.svg';
+  static const String play = '$root/play.svg';
+  static const String downloadStack = '$root/downloadStack.svg';
+  static const String uploadStack = '$root/uploadStack.svg';
+  static const String share_ind = '$root/share_ind.svg';
+  static const String forward_lean = '$root/forward_lean.svg';
+  static const String PlayIconVideo = '$root/PlayIconVideo.svg';
+  static const String plus_round = '$root/plus_round.svg';
+  static const String fileUploadIcon = '$root/fileupload.svg';
+  static const String movetoFolderIcon = '$root/movetofolder.svg';
+  static const String infoOfPhotoIcon = '$root/infoofphoto.svg';
+  static const String deletePhotoIcon = '$root/delete_bucket.svg';
+  static const String privateEyeIcon = '$root/privateeye.svg';
+  static const String unprivateEyeIcon = '$root/unprivate.svg';
+  static const String plus_round_media = '$root/plus_round_media.svg';
+  static const String eye = '$root/eye.png';
+  static const String phone = '$root/phone.png';
+  static const String downArrow = '$root/downArrow.png';
+  static const String reply = '$root/reply.png';
+  static const String forward = '$root/forward.png';
+  static const String copy = '$root/copy.png';
+  static const String chatIcon = "$root/chat_icon_megnta.svg";
+  static const String healthApp = "$root/Applehealth.png";
+}

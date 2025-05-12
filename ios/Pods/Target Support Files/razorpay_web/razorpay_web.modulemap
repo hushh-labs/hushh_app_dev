@@ -1,0 +1,6 @@
+framework module razorpay_web {
+  umbrella header "razorpay_web-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "flutter_media_metadata",
+  "version": "0.0.1",
+  "summary": "A Flutter plugin to read metadata of media files.",
+  "description": "A Flutter plugin to read metadata of media files.",
+  "homepage": "https://github.com/alexmercerind/flutter_media_metadata",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Hitesh Kumar Saini": "saini123hitesh@gmail.com"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "dependencies": {
+    "Flutter": []
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES",
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "i386"
+  },
+  "swift_versions": "5.0",
+  "swift_version": "5.0"
+}

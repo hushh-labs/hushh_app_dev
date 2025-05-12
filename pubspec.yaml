@@ -1,0 +1,241 @@
+name: hushh_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ui
+  icons_plus:
+  flutter_swiper_view:
+  neopop:
+  cupertino_icons:
+  animated_checkmark:
+  form_validator:
+  page_transition:
+  fadingpageview:
+  mask_text_input_formatter:
+  flutter_animate:
+  just_the_tooltip:
+  pull_to_refresh_flutter3:
+  readmore:
+  time_range_picker:
+  fl_chart:
+  calendar_view:
+  custom_sliding_segmented_control:
+  dotted_border:
+  duration_picker:
+  azlistview:
+  cached_network_image:
+  lottie:
+  pdf_image_renderer:
+  focused_menu:
+  flutter_svg:
+  pin_code_fields:
+  swipeable_null_safety:
+  chewie:
+  avatar_stack:
+  qr_code_scanner:
+  scan:
+  camera:
+  camerawesome:
+  zxing_lib:
+  pretty_qr_code:
+  flutter_slidable:
+  device_preview:
+  toastification:
+  confetti:
+  carousel_indicator:
+  responsive_sizer:
+  shimmer:
+  flutter_chat_ui:
+  blur:
+  slide_to_act:
+  carousel_slider:
+  auto_size_text:
+
+    #drawing
+  perfect_freehand:
+  image_gallery_saver:
+  vs_media_picker:
+  oktoast:
+  align_positioned:
+  google_fonts:
+
+  # network
+  dio:
+  http:
+  retrofit:
+
+  # state management
+  get_it:
+  bloc:
+  supabase_flutter:
+  flutter_bloc:
+
+  # database/storage
+  shared_preferences:
+  sqflite:
+  hive:
+  hive_flutter:
+  firebase_storage:
+  firebase_core:
+  firebase_core_web:
+
+  # utilities
+  geofence_foreground_service:
+  signin_with_linkedin:
+    git:
+      url: https://github.com/YashMakan/signin_with_linkedin.git
+  palette_generator:
+  vibration:
+  flutter_gemini:
+  metadata_fetch_plus:
+  collection:
+  app_usage:
+  local_auth_crypto:
+  nfc_manager:
+  upgrader:
+  sms_autofill:
+  latlong2:
+  flutter_map:
+  google_maps_flutter:
+  flutter_google_maps_webservices:
+  dart_jts:
+  flutter_chat_types:
+  scrollable_positioned_list:
+  screenshot:
+  fuzzywuzzy:
+  syncfusion_flutter_calendar:
+  syncfusion_flutter_datepicker:
+  flutter_widget_from_html:
+  csv:
+  timeago:
+  flutter_markdown:
+  double_back_to_close:
+  upi_india:
+  tiktoken:
+  #currency_converter:
+  flutter_document_scanner:
+  tuple:
+  permission_handler:
+  geolocator: 13.0.4
+  geocoding:
+  path_provider:
+  path:
+  flutter_keyboard_visibility:
+  crypto:
+  equatable:
+  google_mlkit_face_detection:
+  flutter_native_timezone_updated_gradle:
+  timezone:
+  flutter_local_notifications:
+  ip_country_lookup:
+  firebase_messaging:
+  url_launcher:
+  contacts_service:
+  firebase_remote_config:
+  image_picker:
+  file_picker:
+  image:
+  just_audio:
+  audio_waveforms:
+  flutter_image_compress:
+  flutter_media_metadata:
+  image_cropper:
+  receive_sharing_intent:
+  share_plus:
+  video_thumbnail:
+  record:
+  open_filex:
+  syncfusion_flutter_pdfviewer:
+  firebase_auth:
+  google_mlkit_text_recognition:
+  intl:
+  health:
+  mime:
+  encrypt:
+  uuid:
+  dartz:
+  rxdart:
+  connectivity_plus:
+  timer_count_down:
+  json_annotation:
+  package_info_plus:
+  plaid_flutter:
+  googleapis:
+  extension_google_sign_in_as_googleapis_auth:
+
+  # auth
+  #local_auth: ^2.1.8
+  #local_auth_ios:
+  google_sign_in:
+  sign_in_with_apple:
+
+  # payments
+  flutter_stripe:
+  flutter_stripe_web:
+  pay:
+  razorpay_web:
+  webview_flutter_plus:
+
+  # analytics
+  firebase_analytics:
+  wiredash:
+  talker_flutter:
+  talker_dio_logger:
+  talker_bloc_logger:
+  flutter_fgbg:
+
+dependency_overrides:
+  calendar_view:
+    git:
+      url: https://github.com/SimformSolutionsPvtLtd/flutter_calendar_view.git
+  photo_manager:
+
+
+dev_dependencies:
+  print_remover:
+  flutter_lints:
+  retrofit_generator:
+  build_runner:
+  json_serializable:
+  hive_generator:
+  rename:
+  flutter_launcher_icons:
+  test:
+  yaml:
+  change_app_package_name: ^1.4.0
+
+flutter_icons:
+  image_path: "assets/app-logo.png"
+  android: true
+  ios: true
+
+flutter:
+  fonts:
+    - family: Figtree
+      fonts:
+        - asset: assets/fonts/Figtree/Figtree-Bold.ttf
+        - asset: assets/fonts/Figtree/Figtree-Italic.ttf
+        - asset: assets/fonts/Figtree/Figtree-Light.ttf
+        - asset: assets/fonts/Figtree/Figtree-Medium.ttf
+        - asset: assets/fonts/Figtree/Figtree-Regular.ttf
+        - asset: assets/fonts/Figtree/Figtree-SemiBold.ttf
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/inter.ttf
+
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/icons/
+    - assets/flags/
+    - assets/onboardScreens/
+    - assets/appAccess/
