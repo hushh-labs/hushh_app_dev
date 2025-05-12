@@ -1,6 +1,0 @@
-framework module flutter_media_metadata {
-  umbrella header "flutter_media_metadata-umbrella.h"
-
-  export *
-  module * { export * }
-}
