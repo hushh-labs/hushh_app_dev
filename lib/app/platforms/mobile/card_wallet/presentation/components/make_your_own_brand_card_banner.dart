@@ -29,7 +29,7 @@ class AddBrandCardBanner extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'CARD MARKETPLACE',
+                            'MARKETPLACE',
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14,
