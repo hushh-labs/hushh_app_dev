@@ -1,3 +1,4 @@
+// app/platforms/mobile/card_wallet/presentation/pages/card_wallet_info/user_card_wallet_info_screen.dart
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,7 +61,10 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
             .add(GenerateAudioTranscriptionEvent(widget.cardData, context));
       }
       controller.add(FetchPurchasedItemsEvent());
-      if (AppLocalStorage.hushhId != null && widget.cardData.cid != null) {
+      if (AppLocalStorage.hushhId != null &&
+          widget.cardData.cid != null &&
+          widget.cardData.id != null &&
+          widget.cardData.brandId != null) {
         controller.add(FetchSharedPreferencesEvent(
             hushhId: AppLocalStorage.hushhId!, cardId: widget.cardData.id!));
         sl<LookBookProductBloc>()
@@ -174,10 +178,17 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                                 child: InkWell(
                                   onTap: () {
                                     final cart = sl<InventoryBloc>().cart;
-                                    final allProducts = sl<LookBookProductBloc>().inventoryAllProductsResult?.products ?? [];
-                                    final filteredProducts = allProducts.expand((product) {
-                                      final count = cart[product.productSkuUniqueId] ?? 0;
-                                      return List.generate(count, (_) => product);
+                                    final allProducts =
+                                        sl<LookBookProductBloc>()
+                                                .inventoryAllProductsResult
+                                                ?.products ??
+                                            [];
+                                    final filteredProducts =
+                                        allProducts.expand((product) {
+                                      final count =
+                                          cart[product.productSkuUniqueId] ?? 0;
+                                      return List.generate(
+                                          count, (_) => product);
                                     }).toList();
                                     print(filteredProducts.length);
                                     Navigator.pushNamed(
@@ -186,9 +197,8 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                                       arguments: AgentOrderCheckoutArgs(
                                           products: filteredProducts,
                                           customerModel: CustomerModel(
-                                            brand: widget.cardData,
-                                            user: AppLocalStorage.user!
-                                          )),
+                                              brand: widget.cardData,
+                                              user: AppLocalStorage.user!)),
                                     );
                                   },
                                   borderRadius: BorderRadius.circular(100),
@@ -204,11 +214,8 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                           BlocBuilder(
                             bloc: sl<InventoryBloc>(),
                             builder: (context, state) {
-                              if(sl<InventoryBloc>()
-                                  .cart
-                                  .values
-                                  .sum
-                                  .toInt() != 0) {
+                              if (sl<InventoryBloc>().cart.values.sum.toInt() !=
+                                  0) {
                                 return Positioned(
                                   bottom: 10,
                                   right: -10,
@@ -217,7 +224,8 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                                     builder: (context, state) {
                                       return CircleAvatar(
                                         radius: 12,
-                                        backgroundColor: widget.cardData.secondary,
+                                        backgroundColor:
+                                            widget.cardData.secondary,
                                         child: Text(
                                           sl<InventoryBloc>()
                                               .cart
@@ -225,7 +233,8 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                                               .sum
                                               .toInt()
                                               .toString(),
-                                          style: const TextStyle(color: Colors.white),
+                                          style: const TextStyle(
+                                              color: Colors.white),
                                         ),
                                       );
                                     },
@@ -336,7 +345,7 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                           UserCardWalletInfoDefaultProductsSection(
                               productResult: productResult!),
 
-                        // “Receipts” or second section
+                        // "Receipts" or second section
                         if (productResult?.products.isEmpty ?? true)
                           UserCardWalletInfoUploadsSection(
                               cardData: widget.cardData)
@@ -344,7 +353,7 @@ class _UserCardWalletInfoScreenState extends State<UserCardWalletInfoScreen> {
                           UserCardWalletInfoDefaultDetailsSection(
                               cardData: widget.cardData),
 
-                        // “Access” or third/fourth sections, etc.
+                        // "Access" or third/fourth sections, etc.
                         UserCardWalletInfoManageSection(
                             cardData: widget.cardData),
                       ];
