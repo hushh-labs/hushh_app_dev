@@ -1,3 +1,4 @@
+// app/platforms/mobile/auth/presentation/pages/new/main_page.dart
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
@@ -13,6 +14,8 @@ import 'package:hushh_app/app/shared/core/firebase_config/firebase_remote_config
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+import 'package:hushh_app/app/shared/core/components/web_viewer.dart';
 
 class MainAuthPage extends StatefulWidget {
   const MainAuthPage({super.key});
@@ -31,9 +34,28 @@ class _MainAuthPageState extends State<MainAuthPage> {
   void initState() {
     super.initState();
     sl<AuthPageBloc>().add(const InitializeEvent(true));
-    if (Platform.isIOS) {
-      socialMethods.insert(1, LoginMode.apple);
-    }
+    // Apple sign-in temporarily disabled for App Store release. See ankitdev.md for details.
+    // if (Platform.isIOS) {
+    //   socialMethods.insert(1, LoginMode.apple);
+    // }
+
+    // Debug: Print all important policy URLs
+    print(
+        'Terms of Service URL: \\${FirebaseRemoteConfigService().termsOfService}');
+    print(
+        'Non-discrimination Policy URL: \\${FirebaseRemoteConfigService().nonDisclaimerPolicy}');
+    print(
+        'Payments Terms of Service URL: \\${FirebaseRemoteConfigService().paymentTermsService}');
+    print(
+        'Privacy Policy URL: \\${FirebaseRemoteConfigService().privacyPolicy}');
+  }
+
+  void _showLegalWebView(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const LegalWebViewPage(),
+      ),
+    );
   }
 
   @override
@@ -79,7 +101,9 @@ class _MainAuthPageState extends State<MainAuthPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                sl<HomePageBloc>().isUserFlow?'Hushh 🤫':'Hushh Agent',
+                                sl<HomePageBloc>().isUserFlow
+                                    ? 'Hushh 🤫'
+                                    : 'Hushh Agent',
                                 style: context.displaySmall?.copyWith(
                                     color: Colors.white,
                                     letterSpacing: -1,
@@ -117,7 +141,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
                 //     padding: const EdgeInsets.only(top: 26),
                 //     child: RichText(
                 //       text: TextSpan(
-                //         text: 'Don’t have an account? ',
+                //         text: 'Don't have an account? ',
                 //         style: context.bodyMedium?.inter?.copyWith(
                 //           color: Colors.black.withOpacity(0.7),
                 //         ),
@@ -136,7 +160,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
                 const Spacer(),
                 Text.rich(
                   TextSpan(
-                      text: 'By entering information, I agree to Hushh’s ',
+                      text: "By entering information, I agree to Hushh's ",
                       style: context.labelSmall?.inter?.copyWith(
                         color: Colors.black.withOpacity(0.7),
                       ),
@@ -145,8 +169,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
                           text: 'Terms of Service',
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launchUrl(Uri.parse(FirebaseRemoteConfigService()
-                                  .termsOfService));
+                              _showLegalWebView(context);
                             },
                           style: const TextStyle(color: Color(0xFFE54D60)),
                         ),
@@ -157,8 +180,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
                           text: 'Non-discrimination Policy',
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launchUrl(Uri.parse(FirebaseRemoteConfigService()
-                                  .nonDisclaimerPolicy));
+                              _showLegalWebView(context);
                             },
                           style: const TextStyle(color: Color(0xFFE54D60)),
                         ),
@@ -169,8 +191,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
                           text: 'Payments Terms of Service',
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launchUrl(Uri.parse(FirebaseRemoteConfigService()
-                                  .paymentTermsService));
+                              _showLegalWebView(context);
                             },
                           style: const TextStyle(color: Color(0xFFE54D60)),
                         ),
@@ -181,8 +202,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
                           text: 'Privacy Policy',
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launchUrl(Uri.parse(
-                                  FirebaseRemoteConfigService().privacyPolicy));
+                              _showLegalWebView(context);
                             },
                           style: const TextStyle(color: Color(0xFFE54D60)),
                         ),
@@ -197,6 +217,48 @@ class _MainAuthPageState extends State<MainAuthPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class LegalWebViewSheet extends StatefulWidget {
+  const LegalWebViewSheet({super.key});
+
+  @override
+  State<LegalWebViewSheet> createState() => _LegalWebViewSheetState();
+}
+
+class _LegalWebViewSheetState extends State<LegalWebViewSheet> {
+  late final WebViewControllerPlus _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewControllerPlus()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse('https://hushh-tech-legal.replit.app/'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.85,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            top: 48.0,
+            child: WebViewWidget(controller: _controller),
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              icon: const Icon(Icons.close, size: 28),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -100,6 +100,9 @@
 	<string>Hushh may use speech recognition to enable voice features. Your voice data is processed securely and never shared or stored by Hushh.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!--
+	UIBackgroundModes: Enables background fetch, processing, notifications, and location updates for better user service.
+	-->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -107,18 +110,33 @@
 		<string>remote-notification</string>
 		<string>location</string>
 	</array>
+	<!--
+	UIFileSharingEnabled: Allows users to share or back up their data via Files app or iTunes/Finder.
+	-->
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<!--
+	UILaunchStoryboardName: Sets the launch screen for a smooth branded experience.
+	-->
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<!--
+	UIMainStoryboardFile: Sets the main UI storyboard for the app.
+	-->
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<!--
+	UISupportedInterfaceOrientations: Ensures correct display in portrait and landscape orientations.
+	-->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!--
+	UISupportedInterfaceOrientations~ipad: Ensures correct display in all orientations on iPad.
+	-->
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -126,11 +144,25 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!--
+	UIViewControllerBasedStatusBarAppearance: Allows flexible status bar appearance per screen.
+	-->
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<!--
+	io.flutter.embedded_views_preview: Enables advanced Flutter features like webviews and native views.
+	-->
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+	<!--
+	kTCCServiceMediaLibrary: System key for managing media library access.
+	-->
 	<key>kTCCServiceMediaLibrary</key>
 	<string>media</string>
+	<!--
+	HushhAccountDeletionPolicy: Hushh allows users to permanently delete their account and all associated data (profile, chats, cards, wallet, settings, and history) at any time. No data is retained or shared after deletion. This is part of our commitment to privacy and user control.
+	-->
+	<key>HushhAccountDeletionPolicy</key>
+	<string>Users can permanently delete their account and all personal data from within the app. This includes profile, chat, cards, wallet, settings, and activity history. Data is never retained or shared after deletion. This action is irreversible and ensures full user control over their information.</string>
 </dict>
 </plist>
