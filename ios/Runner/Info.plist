@@ -62,42 +62,42 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NFCReaderUsageDescription</key>
-	<string>NFC reader</string>
+	<string>Hushh uses NFC only to help you connect with compatible devices or services. We never collect or share your NFC data. Your privacy and security are always our top priority.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Music!</string>
+	<string>Hushh may request access to your music library to personalize your experience. We do not collect, store, or share your music data. Your choices remain private and secure.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Calendars</string>
+	<string>Hushh uses your calendar only to help you manage events and reminders within the app. We never access, store, or share your calendar data with anyone.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to scan QR codes</string>
+	<string>Hushh needs camera access to scan QR codes and enhance your profile. We do not store or share your photos or camera data. Your privacy is always protected.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>This app requires contacts access to function properly.</string>
+	<string>Hushh requests access to your contacts only to help you connect with people you know. We never use your contacts for any other purpose, nor do we share them with anyone.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Why is my app authenticating using face id?</string>
+	<string>Hushh uses Face ID solely for secure authentication. Your biometric data never leaves your device and is never shared or stored by Hushh.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>We will sync your data with the Apple Health app to give you better insights</string>
+	<string>Hushh may sync with Apple Health to provide you with better insights and personalized experiences. Your health data is never used for any other purpose or shared with third parties.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>We will sync your data with the Apple Health app to give you better insights</string>
+	<string>Hushh may sync with Apple Health to provide you with better insights and personalized experiences. Your health data is never used for any other purpose or shared with third parties.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Your app needs access to your location.</string>
+	<string>Hushh uses your location only to provide personalized services and enhance your experience. We never use your location for advertising or share it with anyone.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
+	<string>Hushh may access your location in the background to deliver seamless, personalized features. Your location data is never shared or used for any other purpose.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<string>Hushh uses your location only while the app is open to personalize your experience. We do not store or share your location data.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>microphone</string>
+	<string>Hushh may request microphone access for features like voice input. We never record, store, or share your audio data. Your privacy is always protected.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>motion</string>
+	<string>Hushh uses motion data only to enhance your in-app experience. We do not collect, store, or share your motion data with anyone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To upload photos, please allow permission to access your photo library</string>
+	<string>Hushh requests access to your photo library only so you can upload photos to your profile. We never access, store, or share your photos for any other reason.</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>reminders</string>
+	<string>Hushh uses reminders only to help you manage tasks within the app. We do not collect, store, or share your reminders with anyone.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>speech</string>
+	<string>Hushh may use speech recognition to enable voice features. Your voice data is processed securely and never shared or stored by Hushh.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
