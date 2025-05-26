@@ -1,3 +1,4 @@
+// app/platforms/mobile/auth/presentation/bloc/sign_up_bloc/bloc.dart
 import 'dart:async';
 import 'dart:developer';
 import 'dart:typed_data';
@@ -394,9 +395,14 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
           return;
         }
       } on AuthException catch (err) {
-        showToast(err.message);
-        emit(SigningUpErrorState());
-        return;
+        if (err.message != null &&
+            err.message!.toLowerCase().contains('already been registered')) {
+          // Suppress this error and allow flow to continue
+        } else {
+          showToast(err.message);
+          emit(SigningUpErrorState());
+          return;
+        }
       }
     }
     userGuideController.next();
