@@ -1,3 +1,4 @@
+// app/platforms/mobile/card_wallet/presentation/bloc/inventory_bloc/events.dart
 part of 'bloc.dart';
 
 abstract class InventoryEvent extends Equatable {
@@ -48,7 +49,8 @@ class OnProductSelectEvent extends InventoryEvent {
   final String productSkuUniqueId;
   final bool isSelected;
 
-  const OnProductSelectEvent({required this.productSkuUniqueId, required this.isSelected});
+  const OnProductSelectEvent(
+      {required this.productSkuUniqueId, required this.isSelected});
 
   @override
   List<Object> get props => [productSkuUniqueId, isSelected];
@@ -71,3 +73,5 @@ class OnProductCardCountDecremented extends InventoryEvent {
   @override
   List<Object> get props => [productSkuUniqueId];
 }
+
+class CartClearedEvent extends InventoryEvent {}
