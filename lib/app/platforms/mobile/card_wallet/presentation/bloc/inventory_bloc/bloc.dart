@@ -1,3 +1,4 @@
+// app/platforms/mobile/card_wallet/presentation/bloc/inventory_bloc/bloc.dart
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
@@ -47,6 +48,7 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     on<OnProductSelectEvent>(onProductSelectEvent);
     on<OnProductCardCountIncremented>(onProductCardCountIncremented);
     on<OnProductCardCountDecremented>(onProductCardCountDecremented);
+    on<CartClearedEvent>(_onCartCleared);
   }
 
   List<InventoryConfiguration>? inventories;
@@ -202,10 +204,16 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     emit(ProductCountDecrementingInCartState());
     if (cart.containsKey(event.productSkuUniqueId)) {
       cart[event.productSkuUniqueId] = cart[event.productSkuUniqueId]! - 1;
-      if(cart[event.productSkuUniqueId]! <= 0) {
+      if (cart[event.productSkuUniqueId]! <= 0) {
         cart.remove(event.productSkuUniqueId);
       }
     }
     emit(ProductCountDecrementedInCartState());
+  }
+
+  FutureOr<void> _onCartCleared(
+      CartClearedEvent event, Emitter<InventoryState> emit) {
+    cart.clear();
+    emit(CartClearedState());
   }
 }
