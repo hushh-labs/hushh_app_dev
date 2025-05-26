@@ -1,3 +1,4 @@
+// app/platforms/mobile/auth/presentation/pages/auth.dart
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -23,7 +24,6 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-
   @override
   void dispose() {
     super.dispose();
@@ -51,7 +51,7 @@ class _AuthPageState extends State<AuthPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.pop(context);
                   },
                   child: Container(
@@ -77,8 +77,8 @@ class _AuthPageState extends State<AuthPage> {
               alignment: Alignment.centerLeft,
               child: Text(
                 'Log in to your account',
-                style: context.headlineMedium?.copyWith(
-                    letterSpacing: -1, fontWeight: FontWeight.w600),
+                style: context.headlineMedium
+                    ?.copyWith(letterSpacing: -1, fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(height: 4),
