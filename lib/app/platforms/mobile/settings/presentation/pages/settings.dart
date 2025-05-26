@@ -1,3 +1,4 @@
+// app/platforms/mobile/settings/presentation/pages/settings.dart
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -201,11 +202,11 @@ class _SettingsPageState extends State<SettingsPage> {
           items: [
             SectionItem(
               label: 'Send Feedback',
-              onTap: () => Wiredash.of(context).show(options: WiredashFeedbackOptions(
-                  collectMetaData: (metaData) => metaData
-                    ..userEmail = AppLocalStorage.user?.email
-                    ..userId = AppLocalStorage.hushhId
-              )),
+              onTap: () => Wiredash.of(context).show(
+                  options: WiredashFeedbackOptions(
+                      collectMetaData: (metaData) => metaData
+                        ..userEmail = AppLocalStorage.user?.email
+                        ..userId = AppLocalStorage.hushhId)),
             ),
             SectionItem(
               label: 'Delete my Account',
@@ -231,8 +232,8 @@ class _SettingsPageState extends State<SettingsPage> {
             SectionItem(
               showArrow: false,
               label: sl<HomePageBloc>().isUserFlow
-                  ? 'Build version: 260(64) / Release date: 11-03-2025'
-                  : 'Build version: 26(25) / Release date: 11-03-2025',
+                  ? 'Build version: 1.0.0(71) / Release date: 27-04-2024'
+                  : 'Build version: 1.0.0(71) / Release date: 27-04-2024',
             ),
           ],
         ),
