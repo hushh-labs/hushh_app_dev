@@ -1,3 +1,4 @@
+// app/platforms/mobile/card_wallet/presentation/bloc/inventory_bloc/states.dart
 part of 'bloc.dart';
 
 /// Default State
@@ -37,9 +38,9 @@ class GoogleSheetDataProcessedState extends InventoryState {
   const GoogleSheetDataProcessedState(this.response, this.sheetId);
 }
 
-class InsertingInventoryConfigurationState  extends InventoryState {}
+class InsertingInventoryConfigurationState extends InventoryState {}
 
-class InventoryConfigurationInsertedState  extends InventoryState {}
+class InventoryConfigurationInsertedState extends InventoryState {}
 
 class SelectingProductFromInventoryState extends InventoryState {}
 
@@ -52,3 +53,5 @@ class ProductCountIncrementedInCartState extends InventoryState {}
 class ProductCountDecrementingInCartState extends InventoryState {}
 
 class ProductCountDecrementedInCartState extends InventoryState {}
+
+class CartClearedState extends InventoryState {}
