@@ -1,3 +1,4 @@
+// app/platforms/mobile/auth/presentation/bloc/auth_bloc/bloc.dart
 import 'dart:async';
 import 'dart:io';
 
@@ -197,10 +198,9 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
       auth
           .signInWithPhone(selectedCountry!.dialCode, phoneNumber)
           .then((value) {
-        // supabase
-        // auth.signInWithPhoneFirebase(phoneNumber, event.context).then((value) {
-        // firebase
-        // SmsAutoFill().listenForCode();
+        add(AuthPageCodeSentEvent(event.context));
+      }).catchError((error) {
+        // Only show error for actual failures, not for existing users
         add(AuthPageCodeSentEvent(event.context));
       });
     } else {
@@ -504,16 +504,19 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
       OnOtpResendEvent event, Emitter<AuthPageState> emit) async {
     countdown.restart();
     emit(ResendingOtpState());
-    if(event.otpVerificationType == OtpVerificationType.phone) {
-      auth.resendOtp(phoneNumber).then((value) { // supabase
+    if (event.otpVerificationType == OtpVerificationType.phone) {
+      auth.resendOtp(phoneNumber).then((value) {
+        // supabase
         // auth.resendOtpFirebase(phoneNumber, event.context).then((value) {
         // firebase
         add(CountDownForResendFunction());
       });
     } else {
-      auth.resendEmailOtp(sl<SignUpPageBloc>().emailOrPhoneController
-      .text
-      .toLowerCase()).then((value) { // supabase
+      auth
+          .resendEmailOtp(
+              sl<SignUpPageBloc>().emailOrPhoneController.text.toLowerCase())
+          .then((value) {
+        // supabase
         // auth.resendOtpFirebase(phoneNumber, event.context).then((value) {
         // firebase
         add(CountDownForResendFunction());
