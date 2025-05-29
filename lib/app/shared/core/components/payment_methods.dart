@@ -1,5 +1,6 @@
 import 'package:hushh_app/currency_converter/currency.dart';
 import 'package:double_back_to_close/double_back_to_close.dart';
+import 'package:pay/pay.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -16,7 +17,7 @@ import 'package:hushh_app/app/shared/core/firebase_config/firebase_remote_config
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:hushh_app/app/shared/core/utils/utils_impl.dart';
-import 'package:pay/pay.dart';
+
 import 'package:razorpay_web/razorpay_web.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:tuple/tuple.dart';
@@ -52,13 +53,14 @@ class PaymentMethodsPage extends StatefulWidget {
 
 class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
   final UpiIndia _upiIndia = UpiIndia();
+  late final Pay _payClient;
 
   List<UpiApp>? appMetaList;
   late List<Tuple4<String, IconData, PaymentMethods, Function()>>
       otherPaymentMethods;
   PaymentMethods? selectedPaymentMethod;
   UpiApp? selectedUpiPayment;
-  late final Pay _payClient;
+
 
   @override
   void initState() {
@@ -88,11 +90,7 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
           selectedPaymentMethod = PaymentMethods.gPay;
           setState(() {});
         }),
-      if (!kIsWeb)
-        Tuple4('Apple Pay', Icons.apple, PaymentMethods.aPay, () {
-          selectedPaymentMethod = PaymentMethods.aPay;
-          setState(() {});
-        }),
+
     ];
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final args =
@@ -293,38 +291,6 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
                         args.onPaymentDone();
                         Navigator.pop(context);
                       });
-                    } else if (selectedPaymentMethod ==
-                        PaymentMethods.razorpay) {
-                      var convertedAmount = await CurrencyConverter.convert(
-                        from: Currency.usd,
-                        to: Currency.inr,
-                        amount: args.amount,
-                      );
-                      await payment(convertedAmount!);
-                    } else if (selectedPaymentMethod == PaymentMethods.aPay) {
-                      var convertedAmount = await CurrencyConverter.convert(
-                        from: Currency.usd,
-                        to: Currency.inr,
-                        amount: args.amount,
-                      );
-                      _payClient = Pay({
-                        PayProvider.google_pay:
-                            PaymentConfiguration.fromJsonString(
-                                defaultGooglePay),
-                        PayProvider.apple_pay:
-                            PaymentConfiguration.fromJsonString(
-                                defaultApplePay),
-                      });
-                      final result = await _payClient.showPaymentSelector(
-                        PayProvider.apple_pay,
-                        [
-                          PaymentItem(
-                            label: 'Total',
-                            amount: '${convertedAmount! * 100}',
-                            status: PaymentItemStatus.final_price,
-                          )
-                        ],
-                      );
                     } else if (selectedPaymentMethod == PaymentMethods.gPay) {
                       var convertedAmount = await CurrencyConverter.convert(
                         from: Currency.usd,
@@ -335,9 +301,6 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
                         PayProvider.google_pay:
                             PaymentConfiguration.fromJsonString(
                                 defaultGooglePay),
-                        PayProvider.apple_pay:
-                            PaymentConfiguration.fromJsonString(
-                                defaultApplePay),
                       });
                       final result = await _payClient.showPaymentSelector(
                         PayProvider.google_pay,
@@ -349,6 +312,16 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
                           )
                         ],
                       );
+                    } else if (selectedPaymentMethod ==
+                        PaymentMethods.razorpay) {
+                      var convertedAmount = await CurrencyConverter.convert(
+                        from: Currency.usd,
+                        to: Currency.inr,
+                        amount: args.amount,
+                      );
+                      await payment(convertedAmount!);
+
+
                     } else if (selectedPaymentMethod ==
                         PaymentMethods.hushhCoins) {
                       int coins = sl<CardWalletPageBloc>().isAgent
