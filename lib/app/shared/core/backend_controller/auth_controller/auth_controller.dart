@@ -28,4 +28,6 @@ abstract class AuthController {
   Future<AuthResponse> verifyEmail(String otp, String email);
 
   Future<void> signOut();
+
+  Future<void> deleteUser();
 }
