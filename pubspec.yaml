@@ -99,7 +99,6 @@ dependencies:
   collection:
   app_usage:
   local_auth_crypto:
-  nfc_manager:
   upgrader:
   sms_autofill:
   latlong2:
