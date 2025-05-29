@@ -104,8 +104,6 @@ enum HushhProduct { hushhApp, hushhButton, hushhExtension, hushhVibeSearch }
 
 enum DayNight { day, night }
 
-enum NfcOperation { read, write }
-
 enum AiMode { single, chat }
 
 enum LoginMode { google, apple, phone }
