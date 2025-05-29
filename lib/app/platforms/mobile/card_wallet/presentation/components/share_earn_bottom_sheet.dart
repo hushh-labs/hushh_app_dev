@@ -9,7 +9,7 @@ import 'package:hushh_app/app/shared/config/constants/enums.dart';
 import 'package:hushh_app/app/shared/core/components/hushh_contacts_bottom_sheet.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
-import 'package:hushh_app/app/shared/core/utils/nfc_utils.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:screenshot/screenshot.dart';
@@ -22,7 +22,6 @@ class ShareAndEarnBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final list = [
       ListTileModel('Hushh Chat', 'assets/hushh_s_logo.png'),
-      ListTileModel('NFC: share with a Single Tap 🤫', 'assets/nfc_icon.png'),
       ListTileModel('Other', 'assets/share_icon.png')
     ];
     return Container(
@@ -128,9 +127,6 @@ class ShareAndEarnBottomSheet extends StatelessWidget {
             builder: (context) => HushhContactsBottomSheet(file: file));
         break;
       case 1:
-        NfcUtils().checkForNfcSupport(NfcOperation.write, context, data: "https://hushhapp.com/?uid=${AppLocalStorage.hushhId}&data=${sl<CardWalletPageBloc>().cardData!.id}");
-        break;
-      case 2:
         XFile xfile = XFile(file.path);
         await Share.shareXFiles([xfile]);
         break;
