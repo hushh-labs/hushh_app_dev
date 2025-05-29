@@ -117,6 +117,26 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
 
   bool get isUser => sl<HomePageBloc>().entity == Entity.user;
 
+  Future<void> _handleNewUser(BuildContext context) async {
+    print('🚀 [AUTH_BLOC] Handling new user - user authenticated in Supabase but not in app database');
+    print('🚀 [AUTH_BLOC] Deleting user completely from Supabase database for fresh signup...');
+    
+    try {
+      // Delete the user completely from Supabase database
+      await auth.deleteUser();
+      print('🚀 [AUTH_BLOC] User deleted completely from Supabase database successfully');
+      
+      // Navigate back to auth page to start fresh signup process
+      print('🚀 [AUTH_BLOC] Navigating back to auth page for fresh signup...');
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      
+    } catch (e) {
+      print('🚀 [AUTH_BLOC] Error deleting user: $e');
+      // Even if delete fails, navigate back to start fresh
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
   Future<void> _navigateToSignUp(context, {required UserModel user}) async {
     bool isNewUser = user.onboardStatus == OnboardStatus.authenticated;
     final tempUser = TempUserModel(
@@ -447,15 +467,28 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
 
   FutureOr<void> onVerifyEvent(
       OnVerifyEvent event, Emitter<AuthPageState> emit) async {
+    print('🚀 [AUTH_BLOC] OnVerifyEvent received!');
+    print('🚀 [AUTH_BLOC] OTP value: ${event.value}');
+    print('🚀 [AUTH_BLOC] OTP length: ${event.value.length}');
+    print('🚀 [AUTH_BLOC] Required OTP length: ${Constants.otpLength}');
+    print('🚀 [AUTH_BLOC] Verification type: ${event.type}');
+    print('🚀 [AUTH_BLOC] Phone number: $phoneNumber');
+    print('🚀 [AUTH_BLOC] OnVerify callback: ${event.onVerify}');
+    
     if (event.value.length == Constants.otpLength) {
+      print('🚀 [AUTH_BLOC] OTP length is valid, proceeding with verification...');
       emit(PhoneVerifyingState());
       try {
         AuthResponse authRes;
         if (event.type == OtpVerificationType.phone) {
+          print('🚀 [AUTH_BLOC] Verifying phone OTP...');
           try {
+            print('🚀 [AUTH_BLOC] Calling auth.verifyPhone with OTP: ${event.value}, Phone: $phoneNumber');
             authRes = await auth.verifyPhone(
                 event.value, phoneNumber, event.onVerify != null);
+            print('🚀 [AUTH_BLOC] Phone verification successful! User: ${authRes.user?.id}');
           } catch (err) {
+            print('🚀 [AUTH_BLOC] Phone verification failed: $err');
             ToastManager(
               Toast(
                 title: 'Invalid OTP',
@@ -478,24 +511,44 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
         // await auth.verifyPhoneFirebase(
         //     firebaseVerificationId!, event.value); //firebase
         if (authRes.user != null) {
+          print('🚀 [AUTH_BLOC] AuthRes user is not null, proceeding with navigation logic...');
           // supabase
           // if (auth.firebaseCurrentUser != null) { // firebase
           if (event.onVerify == null) {
+            print('🚀 [AUTH_BLOC] OnVerify is null, fetching user data...');
+            print('🚀 [AUTH_BLOC] Phone number without code: $phoneNumberWithoutCode');
             final result =
                 await fetchUserUseCase(phoneNumber: phoneNumberWithoutCode);
-            result.fold((l) {}, (user) {
+            result.fold((l) {
+              print('🚀 [AUTH_BLOC] FetchUserUseCase failed: $l');
+              print('🚀 [AUTH_BLOC] Creating new user since fetch failed...');
+              _handleNewUser(event.context);
+            }, (user) {
+              print('🚀 [AUTH_BLOC] FetchUserUseCase result: $user');
               if (user != null) {
+                print('🚀 [AUTH_BLOC] User found, navigating to sign up...');
                 _navigateToSignUp(event.context, user: user);
+              } else {
+                print('🚀 [AUTH_BLOC] User is null, creating new user...');
+                _handleNewUser(event.context);
               }
             });
           } else {
+            print('🚀 [AUTH_BLOC] OnVerify callback is present, calling it...');
             event.onVerify?.call();
           }
+        } else {
+          print('🚀 [AUTH_BLOC] AuthRes user is null, no navigation performed');
         }
       } catch (e, s) {
-        print(e);
-        print(s);
+        print('🚀 [AUTH_BLOC] Exception in onVerifyEvent: $e');
+        print('🚀 [AUTH_BLOC] Stack trace: $s');
+        emit(PhoneVerifiedState());
+        return;
       }
+    } else {
+      print('🚀 [AUTH_BLOC] OTP length is insufficient: ${event.value.length}/${Constants.otpLength}');
+      print('🚀 [AUTH_BLOC] Not proceeding with verification');
     }
     emit(PhoneVerifiedState());
   }
