@@ -91,10 +91,27 @@ class AuthControllerImpl extends AuthController {
   @override
   Future<AuthResponse> verifyPhone(String otp, String phoneNumber,
       [bool isPhoneChange = false]) async {
-    return await supabase.auth.verifyOTP(
-        token: otp,
-        type: isPhoneChange ? OtpType.phoneChange : OtpType.sms,
-        phone: phoneNumber);
+    print('📱 [AUTH_CONTROLLER] verifyPhone called');
+    print('📱 [AUTH_CONTROLLER] OTP: $otp');
+    print('📱 [AUTH_CONTROLLER] Phone: $phoneNumber');
+    print('📱 [AUTH_CONTROLLER] isPhoneChange: $isPhoneChange');
+    print('📱 [AUTH_CONTROLLER] OTP Type: ${isPhoneChange ? OtpType.phoneChange : OtpType.sms}');
+    
+    try {
+      print('📱 [AUTH_CONTROLLER] Calling Supabase verifyOTP...');
+      final result = await supabase.auth.verifyOTP(
+          token: otp,
+          type: isPhoneChange ? OtpType.phoneChange : OtpType.sms,
+          phone: phoneNumber);
+      print('📱 [AUTH_CONTROLLER] Supabase verifyOTP successful!');
+      print('📱 [AUTH_CONTROLLER] User ID: ${result.user?.id}');
+      print('📱 [AUTH_CONTROLLER] Session: ${result.session?.accessToken != null ? "Present" : "Null"}');
+      return result;
+    } catch (e) {
+      print('📱 [AUTH_CONTROLLER] Supabase verifyOTP failed: $e');
+      print('📱 [AUTH_CONTROLLER] Error type: ${e.runtimeType}');
+      rethrow;
+    }
   }
 
   @override
@@ -157,6 +174,38 @@ class AuthControllerImpl extends AuthController {
   @override
   Future<void> signOut() async {
     await supabase.auth.signOut();
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    print('📱 [AUTH_CONTROLLER] Deleting user from Supabase database using RPC...');
+    try {
+      final currentUser = supabase.auth.currentUser;
+      if (currentUser == null) {
+        print('📱 [AUTH_CONTROLLER] No current user found, signing out...');
+        await supabase.auth.signOut();
+        return;
+      }
+      
+      print('📱 [AUTH_CONTROLLER] Current user ID: ${currentUser.id}');
+      
+      // Use the same RPC function as in settings to delete user account
+      final response = await supabase.rpc('delete_user_account',
+          params: {'p_user_id': currentUser.id});
+      
+      print('📱 [AUTH_CONTROLLER] RPC delete_user_account response: $response');
+      print('📱 [AUTH_CONTROLLER] User deleted successfully from Supabase database using RPC');
+      
+      // Sign out after successful deletion
+      await supabase.auth.signOut();
+      print('📱 [AUTH_CONTROLLER] User signed out after deletion');
+      
+    } catch (e) {
+      print('📱 [AUTH_CONTROLLER] Error deleting user from database: $e');
+      // If RPC delete fails, try regular signOut
+      await supabase.auth.signOut();
+      print('📱 [AUTH_CONTROLLER] Fallback: User signed out instead');
+    }
   }
 
   @override
