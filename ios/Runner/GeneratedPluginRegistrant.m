@@ -222,12 +222,6 @@
 @import local_auth_crypto;
 #endif
 
-#if __has_include(<nfc_manager/NfcManagerPlugin.h>)
-#import <nfc_manager/NfcManagerPlugin.h>
-#else
-@import nfc_manager;
-#endif
-
 #if __has_include(<open_filex/OpenFilePlugin.h>)
 #import <open_filex/OpenFilePlugin.h>
 #else
@@ -423,7 +417,6 @@
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
   [JustAudioPlugin registerWithRegistrar:[registry registrarForPlugin:@"JustAudioPlugin"]];
   [LocalAuthCryptoPlugin registerWithRegistrar:[registry registrarForPlugin:@"LocalAuthCryptoPlugin"]];
-  [NfcManagerPlugin registerWithRegistrar:[registry registrarForPlugin:@"NfcManagerPlugin"]];
   [OpenFilePlugin registerWithRegistrar:[registry registrarForPlugin:@"OpenFilePlugin"]];
   [FPPPackageInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPPackageInfoPlusPlugin"]];
   [PathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"PathProviderPlugin"]];
