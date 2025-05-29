@@ -137,9 +137,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     children: [
                       SizedBox(height: 5.h),
                       InkWell(
-                        onTap: () => authController.add(OnVerifyEvent(
-                            authController.otpController.text, context,
-                            onVerify: args.onVerifyFunc, type: args.type)),
+                        onTap: () {
+                          print('🔥 [OTP_VERIFICATION] Verify button tapped!');
+                          print('🔥 [OTP_VERIFICATION] OTP entered: ${authController.otpController.text}');
+                          print('🔥 [OTP_VERIFICATION] OTP length: ${authController.otpController.text.length}');
+                          print('🔥 [OTP_VERIFICATION] Verification type: ${args.type}');
+                          print('🔥 [OTP_VERIFICATION] OnVerify function: ${args.onVerifyFunc}');
+                          
+                          authController.add(OnVerifyEvent(
+                              authController.otpController.text, context,
+                              onVerify: args.onVerifyFunc, type: args.type));
+                        },
                         child: Container(
                           width: double.infinity,
                           height: 56,
