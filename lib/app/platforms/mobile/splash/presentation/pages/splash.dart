@@ -13,8 +13,9 @@ import 'package:hushh_app/app/shared/config/constants/enums.dart';
 import 'package:hushh_app/app/shared/config/routes/routes.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
-import 'package:hushh_app/app/shared/core/utils/nfc_utils.dart';
 import 'package:hushh_app/app/shared/core/utils/notification_service.dart';
+import 'package:hushh_app/widgets/tracking_permission_dialog.dart';
+import 'package:hushh_app/services/tracking_service.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:root_jailbreak_sniffer/rjsniffer.dart';
@@ -33,6 +34,8 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Request App Tracking Transparency permission early in app lifecycle
+      await _requestTrackingPermissionIfNeeded();
       sl<SignUpPageBloc>().user = AppLocalStorage.user;
       // bool amICompromised = await Rjsniffer.amICompromised() ?? false;
       //
@@ -65,7 +68,6 @@ class _SplashPageState extends State<SplashPage> {
         //                 .currentSession!.accessToken)));
         //   }
         // });
-        NfcUtils().checkForNfcSupport(NfcOperation.read, context);
         sl<SplashPageBloc>().add(const UpdateUserRegistrationTokenEvent());
         if (sl<HomePageBloc>().isUserFlow) {
           sl<CardWalletPageBloc>().getInstalledCards().then((value) {
@@ -83,6 +85,42 @@ class _SplashPageState extends State<SplashPage> {
         sl<CardWalletPageBloc>().add(CardWalletInitializeEvent(context));
       }
     });
+  }
+
+  /// Request App Tracking Transparency permission if needed
+  Future<void> _requestTrackingPermissionIfNeeded() async {
+    if (!kIsWeb) {
+      try {
+        // Check current tracking status
+        final currentStatus = await TrackingService.getTrackingStatus();
+        print('🔒 [TRACKING] Current tracking status: $currentStatus');
+        
+        // Only show dialog if status is not determined
+        if (currentStatus == TrackingStatus.notDetermined) {
+          print('🔒 [TRACKING] Showing tracking permission dialog...');
+          
+          // Show custom dialog first, then request system permission
+          if (mounted) {
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => TrackingPermissionDialog(
+                onAuthorized: () {
+                  print('🔒 [TRACKING] User authorized tracking');
+                },
+                onDenied: () {
+                  print('🔒 [TRACKING] User denied tracking');
+                },
+              ),
+            );
+          }
+        } else {
+          print('🔒 [TRACKING] Tracking permission already determined: $currentStatus');
+        }
+      } catch (e) {
+        print('🔒 [TRACKING] Error requesting tracking permission: $e');
+      }
+    }
   }
 
   @override
