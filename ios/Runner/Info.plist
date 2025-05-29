@@ -61,8 +61,7 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
-	<key>NFCReaderUsageDescription</key>
-	<string>Hushh uses NFC only to help you connect with compatible devices or services. We never collect or share your NFC data. Your privacy and security are always our top priority.</string>
+
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
@@ -83,11 +82,11 @@
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Hushh may sync with Apple Health to provide you with better insights and personalized experiences. Your health data is never used for any other purpose or shared with third parties.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Hushh uses your location to provide personalized, location-based services. For example, we use your location to show you relevant offers, services, and content available in your area. Your location data is used only to enhance your experience and is never shared with third parties.</string>
+	<string>Hushh uses your location to provide personalized, location-based services while you use the app. Specifically, we use your location to: (1) Show you nearby stores, restaurants, and businesses with available offers and discounts, (2) Display location-specific content and recommendations based on your current city or region, (3) Help you find local agents and services in your area, and (4) Automatically set your country and region for better app experience. Your location data is processed locally and is never shared with third parties.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Hushh uses your location in the background to provide you with timely, location-based services. For example, we use your location to notify you about relevant offers and services available near you. Your location data is used only to enhance your experience and is never shared with third parties.</string>
+	<string>Hushh uses your location to provide personalized, location-based services. Specifically, we use your location to: (1) Show you nearby stores, restaurants, and businesses with available offers and discounts, (2) Display location-specific content and recommendations based on your current city or region, (3) Help you find local agents and services in your area, and (4) Automatically set your country and region for better app experience. Your location data is processed locally and is never shared with third parties.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Hushh uses your location to provide personalized, location-based services. For example, we use your location to show you relevant offers, services, and content available in your area. Your location data is used only to enhance your experience and is never shared with third parties.</string>
+	<string>Hushh uses your location to provide personalized, location-based services while you use the app. Specifically, we use your location to: (1) Show you nearby stores, restaurants, and businesses with available offers and discounts, (2) Display location-specific content and recommendations based on your current city or region, (3) Help you find local agents and services in your area, and (4) Automatically set your country and region for better app experience. Your location data is processed locally and is never shared with third parties.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Hushh may request microphone access for features like voice input. We never record, store, or share your audio data. Your privacy is always protected.</string>
 	<key>NSMotionUsageDescription</key>
@@ -103,14 +102,14 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<!--
-	UIBackgroundModes: Enables background fetch, processing, notifications, and location updates for better user service.
+	UIBackgroundModes: Enables background fetch, processing, and notifications for better user service.
+	Note: Location removed as app only uses location for personalized services when in use, not persistent background tracking.
 	-->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
 		<string>processing</string>
 		<string>remote-notification</string>
-		<string>location</string>
 	</array>
 	<!--
 	UIFileSharingEnabled: Allows users to share or back up their data via Files app or iTunes/Finder.
