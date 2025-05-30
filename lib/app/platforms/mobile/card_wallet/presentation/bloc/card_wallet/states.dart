@@ -75,6 +75,13 @@ class SharedPreferencesFetchedState extends CardWalletPageState {}
 
 class InsertingSharedPreferenceState extends CardWalletPageState {}
 
-class SharedPreferenceInsertedState extends CardWalletPageState {}
+class SharedPreferenceInsertedState extends CardWalletPageState {
+  final String successMessage;
+
+  const SharedPreferenceInsertedState(this.successMessage);
+
+  @override
+  List<Object> get props => [successMessage];
+}
 
 class ErrorInsertingSharedPreferenceState extends CardWalletPageState {}

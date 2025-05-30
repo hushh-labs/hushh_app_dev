@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_market/presentation/bloc/card_market_bloc/bloc.dart';
@@ -10,7 +12,9 @@ import 'package:hushh_app/app/shared/config/routes/routes.dart';
 import 'package:hushh_app/app/shared/config/theme/text_theme.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
+import 'package:hushh_app/app/shared/core/utils/toast_manager.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:toastification/toastification.dart';
 
 class SharedPreferencesView extends StatelessWidget {
   final bool removeTitle;
@@ -20,11 +24,23 @@ class SharedPreferencesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = sl<CardWalletPageBloc>();
-    return Padding(
-      padding: removeTitle
-          ? EdgeInsets.zero
-          : const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
+    return BlocListener<CardWalletPageBloc, CardWalletPageState>(
+      bloc: controller,
+      listener: (context, state) {
+        if (state is SharedPreferenceInsertedState) {
+          ToastManager(
+            Toast(
+              title: state.successMessage,
+              type: ToastificationType.success,
+            ),
+          ).show(context);
+        }
+      },
+      child: Padding(
+        padding: removeTitle
+            ? EdgeInsets.zero
+            : const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
         children: [
           if (!removeTitle)
             Row(
@@ -238,11 +254,15 @@ class SharedPreferencesView extends StatelessWidget {
               }),
           const SizedBox(height: 26),
         ],
+        ),
       ),
     );
   }
 
   void onAdd(card, context) async {
+    log('🎯 [SHARED_PREFERENCES_VIEW] User clicked Add preference button');
+    log('📱 [SHARED_PREFERENCES_VIEW] Card ID: ${card?.id}, Card Name: ${card?.brandName}');
+    
     final qA = await showModalBottomSheet(
         isDismissible: true,
         enableDrag: true,
@@ -251,9 +271,17 @@ class SharedPreferencesView extends StatelessWidget {
         context: context,
         builder: (BuildContext context) =>
         const SharePreferencesBottomSheet());
+        
     if (qA != null) {
       final question = qA.question;
       final answer = qA.answer;
+      
+      log('📝 [SHARED_PREFERENCES_VIEW] User provided preference data:');
+      log('❓ [SHARED_PREFERENCES_VIEW] Question: "$question"');
+      log('💭 [SHARED_PREFERENCES_VIEW] Answer: "$answer"');
+      log('📄 [SHARED_PREFERENCES_VIEW] Content: "${qA.content}"');
+      log('🚀 [SHARED_PREFERENCES_VIEW] Dispatching AddNewPreferenceToCardEvent...');
+      
       sl<CardWalletPageBloc>().add(
           AddNewPreferenceToCardEvent(
               cardId: card.id!,
@@ -267,6 +295,8 @@ class SharedPreferencesView extends StatelessWidget {
                   questionType:
                   CardQuestionType
                       .textNoteQuestion)));
+    } else {
+      log('❌ [SHARED_PREFERENCES_VIEW] User cancelled preference addition');
     }
   }
 }

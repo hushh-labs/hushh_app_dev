@@ -46,17 +46,28 @@ class GeofenceService {
     required String channelId,
     int serviceId = 525600,
   }) async {
+    // Skip geofencing initialization on iOS to prevent crashes
+    if (Platform.isIOS) {
+      log('Geofencing service disabled on iOS');
+      return true; // Return true to not break the app flow
+    }
+
     await Permission.location.request();
     await Permission.locationAlways.request();
     await Permission.notification.request();
 
-    return await _geofenceService.startGeofencingService(
-      contentTitle: notificationTitle,
-      contentText: notificationText,
-      notificationChannelId: channelId,
-      serviceId: serviceId,
-      callbackDispatcher: _geofenceCallback,
-    );
+    try {
+      return await _geofenceService.startGeofencingService(
+        contentTitle: notificationTitle,
+        contentText: notificationText,
+        notificationChannelId: channelId,
+        serviceId: serviceId,
+        callbackDispatcher: _geofenceCallback,
+      );
+    } catch (e) {
+      log('Error starting geofencing service: $e');
+      return false;
+    }
   }
 
   /// Add a new geofence zone
@@ -67,6 +78,12 @@ class GeofenceService {
     required List<LatLng> coordinates,
     required double radiusInMeters,
   }) async {
+    // Skip geofencing operations on iOS
+    if (Platform.isIOS) {
+      log('Geofence add operation skipped on iOS');
+      return true;
+    }
+
     try {
       await _geofenceService.addGeofenceZone(
         zone: Zone(
@@ -84,6 +101,12 @@ class GeofenceService {
 
   /// Remove a geofence zone by ID
   Future<bool> removeGeofence(String zoneId) async {
+    // Skip geofencing operations on iOS
+    if (Platform.isIOS) {
+      log('Geofence remove operation skipped on iOS');
+      return true;
+    }
+
     try {
       await _geofenceService.removeGeofenceZone(zoneId: zoneId);
       return true;
@@ -95,6 +118,12 @@ class GeofenceService {
 
   /// Remove all geofence zones
   Future<bool> removeAllGeoFences() async {
+    // Skip geofencing operations on iOS
+    if (Platform.isIOS) {
+      log('Geofence remove all operation skipped on iOS');
+      return true;
+    }
+
     try {
       return await _geofenceService.removeAllGeoFences();
     } catch (e) {
@@ -105,7 +134,17 @@ class GeofenceService {
 
   /// Stop the geofence service
   Future<void> stopService() async {
-    await _geofenceService.stopGeofencingService();
+    // Skip geofencing operations on iOS
+    if (Platform.isIOS) {
+      log('Geofence stop service operation skipped on iOS');
+      return;
+    }
+
+    try {
+      await _geofenceService.stopGeofencingService();
+    } catch (e) {
+      log('Error stopping geofencing service: $e');
+    }
   }
 
   /// Dispose the service and close streams
