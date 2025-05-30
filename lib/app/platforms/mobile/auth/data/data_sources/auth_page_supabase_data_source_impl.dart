@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hushh_app/app/platforms/mobile/auth/domain/entities/agent.dart';
 import 'package:hushh_app/app/platforms/mobile/auth/domain/entities/location.dart';
 import 'package:hushh_app/app/platforms/mobile/auth/domain/entities/user.dart';
@@ -75,12 +77,41 @@ class AuthPageSupabaseDataSourceImpl extends AuthPageSupabaseDataSource {
 
   @override
   Future<void> updateUser(UserModel userModel, String uid) async {
+    log('🚀 [USER_UPDATE] Starting user update process');
+    log('👤 [USER_UPDATE] User ID: $uid');
+    
     final data = userModel.toJson();
+    log('📊 [USER_UPDATE] Original data keys: ${data.keys.toList()}');
+    
+    // Check for timestamp fields before removing nulls
+    bool hasTimestamps = false;
+    if (data.containsKey('dob_updated_at') && data['dob_updated_at'] != null) {
+      log('🎂 [USER_UPDATE] DOB timestamp detected: ${data['dob_updated_at']}');
+      hasTimestamps = true;
+    }
+    
+    if (!hasTimestamps) {
+      log('⚠️ [USER_UPDATE] No timestamp fields detected in update');
+    }
+    
     data.removeWhere((key, value) => value == null);
-    await supabase
-        .from(DbTables.usersTable)
-        .update(data)
-        .match({'hushh_id': uid});
+    log('📝 [USER_UPDATE] Final data keys after null removal: ${data.keys.toList()}');
+    log('💾 [USER_UPDATE] Updating users table in Supabase...');
+    
+    try {
+      await supabase
+          .from(DbTables.usersTable)
+          .update(data)
+          .match({'hushh_id': uid});
+      
+      log('✅ [USER_UPDATE] User update successful!');
+      if (hasTimestamps) {
+        log('🎉 [USER_UPDATE] Timestamp fields successfully updated in database!');
+      }
+    } catch (e) {
+      log('❌ [USER_UPDATE] Error updating user: $e');
+      rethrow;
+    }
   }
 
   @override
