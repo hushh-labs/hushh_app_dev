@@ -137,7 +137,14 @@ class AgentCardWalletPageBloc
 
   Future<void> onEditablePromptUpdated(List<CardQuestionAnswerModel> prompts,
       String value, String promptId, BuildContext context) async {
+    log('🎯 [GENERAL_PREFERENCE] Starting field update process');
+    log('📝 [GENERAL_PREFERENCE] Field ID: $promptId');
+    log('💭 [GENERAL_PREFERENCE] New Value: "$value"');
+    log('👤 [GENERAL_PREFERENCE] User: ${AppLocalStorage.hushhId}');
+    log('🔑 [GENERAL_PREFERENCE] Field Key: $fieldKey');
+    
     emit(LoadingState());
+    
     Map<String, dynamic>? payload = {
       'name': {'name': value},
       'phone': {'phoneNumber': value},
@@ -151,21 +158,58 @@ class AgentCardWalletPageBloc
       'income': null,
       'blood_type': null,
     }[promptId];
-    if (fieldKey == 'hushh_id_card_questions') {
-      AppLocalStorage.updateUser(
-          AppLocalStorage.user!.copyWith(hushhIdCardQuestions: prompts));
+    
+    log('📊 [GENERAL_PREFERENCE] Payload for update: $payload');
+    
+    // Check if this is a tracked preference type for timestamp updates
+    String? timestampField;
+    if (promptId == 'dob') {
+      timestampField = 'dob_updated_at';
+      log('🎂 [GENERAL_PREFERENCE] DOB field detected - will update timestamp');
     } else {
-      AppLocalStorage.updateUser(
-          AppLocalStorage.user!.copyWith(demographicCardQuestions: prompts));
+      log('❓ [GENERAL_PREFERENCE] Field type not tracked for timestamps: $promptId');
     }
-    AppLocalStorage.updateUser(AppLocalStorage.user!.copyWithFromJson(payload));
-    await updateUserUseCase(
-            uid: AppLocalStorage.hushhId!, user: AppLocalStorage.user!)
-        .then((value) {
-      ToastManager(
-              Toast(title: 'User info updated!', type: ToastificationType.info))
-          .show(context);
-    });
+    
+    // Add timestamp to payload if this is a tracked field
+    if (timestampField != null && payload != null) {
+      final now = DateTime.now().toIso8601String();
+      payload[timestampField] = now;
+      log('⏰ [GENERAL_PREFERENCE] Added timestamp to payload: $timestampField = $now');
+    }
+    
+    try {
+      if (fieldKey == 'hushh_id_card_questions') {
+        log('🆔 [GENERAL_PREFERENCE] Updating Hushh ID card questions');
+        AppLocalStorage.updateUser(
+            AppLocalStorage.user!.copyWith(hushhIdCardQuestions: prompts));
+      } else {
+        log('📋 [GENERAL_PREFERENCE] Updating demographic card questions');
+        AppLocalStorage.updateUser(
+            AppLocalStorage.user!.copyWith(demographicCardQuestions: prompts));
+      }
+      
+      log('💾 [GENERAL_PREFERENCE] Updating user data in local storage');
+      AppLocalStorage.updateUser(AppLocalStorage.user!.copyWithFromJson(payload));
+      
+      log('🚀 [GENERAL_PREFERENCE] Sending update to backend...');
+      await updateUserUseCase(
+              uid: AppLocalStorage.hushhId!, user: AppLocalStorage.user!)
+          .then((value) {
+        log('✅ [GENERAL_PREFERENCE] Backend update successful!');
+        if (timestampField != null) {
+          log('🎉 [GENERAL_PREFERENCE] Timestamp successfully updated for $promptId');
+        }
+        ToastManager(
+                Toast(title: 'User info updated!', type: ToastificationType.info))
+            .show(context);
+      });
+      
+      log('🏁 [GENERAL_PREFERENCE] Field update process completed successfully!');
+    } catch (e) {
+      log('❌ [GENERAL_PREFERENCE] Error during update process: $e');
+      rethrow;
+    }
+    
     emit(DoneState());
   }
 

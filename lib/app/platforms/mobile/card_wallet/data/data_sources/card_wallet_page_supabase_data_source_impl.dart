@@ -80,11 +80,66 @@ class CardWalletPageSupabaseDataSourceImpl
   @override
   Future<void> insertSharedPreference(
       UserPreference preference, String hushhId, int cardId) async {
+    log('🔄 [PREFERENCE_UPDATE] Starting preference insertion for user: $hushhId, card: $cardId');
+    log('📝 [PREFERENCE_UPDATE] Question: "${preference.question}"');
+    log('💬 [PREFERENCE_UPDATE] Answer: "${preference.answers.join(', ')}"');
+    
     final data = preference.toJson();
     data.remove('mandatory');
     data.remove('question_id');
     data.addEntries([MapEntry('hushh_id', hushhId), MapEntry('card_id', cardId)]);
-    await supabase.from(DbTables.sharedPreferencesTable).insert(data);
+    
+    try {
+      // Insert preference data
+      await supabase.from(DbTables.sharedPreferencesTable).insert(data);
+      log('✅ [PREFERENCE_UPDATE] Preference data inserted successfully into shared_preferences table');
+      
+      // Update timestamp in users table based on preference type
+      await _updateUserTimestamp(preference.question, hushhId);
+      
+      log('🎉 [PREFERENCE_UPDATE] Preference update completed successfully!');
+    } catch (e) {
+      log('❌ [PREFERENCE_UPDATE] Error inserting preference: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _updateUserTimestamp(String question, String hushhId) async {
+    log('⏰ [TIMESTAMP_UPDATE] Analyzing question for timestamp update: "$question"');
+    
+    final now = DateTime.now().toIso8601String();
+    Map<String, dynamic> updateData = {};
+    String detectedType = 'unknown';
+    
+    // Check question type and update corresponding timestamp
+    if (question.toLowerCase().contains('date of birth') || question.toLowerCase().contains('dob')) {
+      updateData['dob_updated_at'] = now;
+      detectedType = 'Date of Birth';
+      log('🎂 [TIMESTAMP_UPDATE] Detected DOB preference - updating dob_updated_at timestamp');
+    } else {
+      log('❓ [TIMESTAMP_UPDATE] No specific timestamp field detected for this question type');
+    }
+    
+    // Update users table if we have data to update
+    if (updateData.isNotEmpty) {
+      log('📊 [TIMESTAMP_UPDATE] Updating users table with timestamp data: $updateData');
+      log('👤 [TIMESTAMP_UPDATE] Target user: $hushhId');
+      
+      try {
+        await supabase
+            .from(DbTables.usersTable)
+            .update(updateData)
+            .eq('hushh_id', hushhId);
+        
+        log('✅ [TIMESTAMP_UPDATE] Successfully updated $detectedType timestamp in users table!');
+        log('🕐 [TIMESTAMP_UPDATE] Timestamp value: $now');
+      } catch (e) {
+        log('❌ [TIMESTAMP_UPDATE] Error updating timestamp in users table: $e');
+        rethrow;
+      }
+    } else {
+      log('⚠️ [TIMESTAMP_UPDATE] No timestamp update needed - question type not tracked');
+    }
   }
 
   @override

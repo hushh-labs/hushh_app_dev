@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -710,19 +711,45 @@ class CardWalletPageBloc
 
   FutureOr<void> addNewPreferenceToCardEvent(AddNewPreferenceToCardEvent event,
       Emitter<CardWalletPageState> emit) async {
+    log('🎯 [CARD_WALLET_BLOC] Starting addNewPreferenceToCardEvent');
+    log('👤 [CARD_WALLET_BLOC] User: ${event.hushhId}, Card: ${event.cardId}');
+    log('❓ [CARD_WALLET_BLOC] Question: "${event.preference.question}"');
+    log('💭 [CARD_WALLET_BLOC] Answer: "${event.preference.answers.join(', ')}"');
+    
     emit(InsertingSharedPreferenceState());
+    
     final result = await insertSharedPreferenceUseCase(
       preference: event.preference,
       cardId: event.cardId,
       hushhId: event.hushhId,
     );
-    result.fold((l) => emit(ErrorInsertingSharedPreferenceState()), (r) {
-      emit(SharedPreferenceInsertedState());
+    
+    result.fold((l) {
+      log('❌ [CARD_WALLET_BLOC] Failed to insert preference: $l');
+      emit(ErrorInsertingSharedPreferenceState());
+    }, (r) {
+      log('✅ [CARD_WALLET_BLOC] Preference inserted successfully!');
+      
+      // Show success message based on preference type
+      String successMessage = _getSuccessMessage(event.preference.question);
+      log('🎉 [CARD_WALLET_BLOC] Success message: "$successMessage"');
+      
+      emit(SharedPreferenceInsertedState(successMessage));
+      
+      log('🔄 [CARD_WALLET_BLOC] Fetching updated shared preferences...');
       add(FetchSharedPreferencesEvent(
         hushhId: AppLocalStorage.hushhId!,
         cardId: event.cardId,
       ));
     });
+  }
+
+  String _getSuccessMessage(String question) {
+    if (question.toLowerCase().contains('date of birth') || question.toLowerCase().contains('dob')) {
+      return 'Date of Birth updated successfully!';
+    } else {
+      return 'Preference updated successfully!';
+    }
   }
 
   FutureOr<void> onClickingSharePreferenceButtonEvent(OnClickingSharePreferenceButtonEvent event, Emitter<CardWalletPageState> emit) async {
