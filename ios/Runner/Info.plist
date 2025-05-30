@@ -110,6 +110,7 @@
 		<string>fetch</string>
 		<string>processing</string>
 		<string>remote-notification</string>
+		<string>location</string>
 	</array>
 	<!--
 	UIFileSharingEnabled: Allows users to share or back up their data via Files app or iTunes/Finder.
