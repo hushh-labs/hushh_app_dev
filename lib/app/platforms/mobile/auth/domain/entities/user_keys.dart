@@ -14,4 +14,5 @@ class UserKeys {
   static const String conversationsKey = "conversations";
   static const String gptTokenUsageKey = "gpt_token_usage";
   static const String lastUsedTokenDateTimeKey = "last_used_token_date_time";
+  static const String dobUpdatedAtKey = "dob_updated_at";
 }

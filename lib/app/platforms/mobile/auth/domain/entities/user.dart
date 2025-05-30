@@ -117,6 +117,12 @@ class UserModel {
   @JsonKey(name: 'selected_reason_for_using_hushh')
   String? selectedReasonForUsingHushh;
 
+  @HiveField(27)
+  @JsonKey(name: UserKeys.dobUpdatedAtKey)
+  DateTime? dobUpdatedAt;
+
+
+
   UserModel(
       {this.avatar,
       this.creationTime,
@@ -143,6 +149,7 @@ class UserModel {
       this.lastName,
       this.profileVideo,
       this.selectedReasonForUsingHushh,
+      this.dobUpdatedAt,
       required this.onboardStatus});
 
   String get name => "${firstName ?? ""} ${lastName ?? ""}".capitalize();
@@ -182,6 +189,7 @@ class UserModel {
       String? firstName,
       String? lastName,
       String? profileVideo,
+      DateTime? dobUpdatedAt,
       List<CardQuestionAnswerModel>? demographicCardQuestions,
       List<CardQuestionAnswerModel>? hushhIdCardQuestions}) {
     return UserModel(
@@ -212,6 +220,7 @@ class UserModel {
       isHushhVibeUser: isHushhVibeUser ?? this.isHushhVibeUser,
       lastUsedTokenDateTime:
           lastUsedTokenDateTime ?? this.lastUsedTokenDateTime,
+      dobUpdatedAt: dobUpdatedAt ?? this.dobUpdatedAt,
     );
   }
 
@@ -250,6 +259,9 @@ class UserModel {
           ? List<CardQuestionAnswerModel>.from(json['hushh_id_card_questions']
               .map((x) => CardQuestionAnswerModel.fromJson(x)))
           : hushhIdCardQuestions,
+      dobUpdatedAt: json[UserKeys.dobUpdatedAtKey] != null
+          ? DateTime.parse(json[UserKeys.dobUpdatedAtKey])
+          : dobUpdatedAt,
     );
   }
 

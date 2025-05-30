@@ -44,6 +44,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       lastName: fields[24] as String?,
       profileVideo: fields[25] as String?,
       selectedReasonForUsingHushh: fields[26] as String?,
+      dobUpdatedAt: fields[27] as DateTime?,
       onboardStatus: fields[20] as OnboardStatus,
     );
   }
@@ -51,7 +52,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(27)
       ..writeByte(1)
       ..write(obj.avatar)
       ..writeByte(2)
@@ -103,7 +104,9 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(25)
       ..write(obj.profileVideo)
       ..writeByte(26)
-      ..write(obj.selectedReasonForUsingHushh);
+      ..write(obj.selectedReasonForUsingHushh)
+      ..writeByte(27)
+      ..write(obj.dobUpdatedAt);
   }
 
   @override
@@ -160,6 +163,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       profileVideo: json['profileVideo'] as String?,
       selectedReasonForUsingHushh:
           json['selected_reason_for_using_hushh'] as String?,
+      dobUpdatedAt: json['dob_updated_at'] == null
+          ? null
+          : DateTime.parse(json['dob_updated_at'] as String),
       onboardStatus:
           $enumDecode(_$OnboardStatusEnumMap, json['onboard_status']),
     );
@@ -192,6 +198,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'last_name': instance.lastName,
       'profileVideo': instance.profileVideo,
       'selected_reason_for_using_hushh': instance.selectedReasonForUsingHushh,
+      'dob_updated_at': instance.dobUpdatedAt?.toIso8601String(),
     };
 
 const _$EntityEnumMap = {
