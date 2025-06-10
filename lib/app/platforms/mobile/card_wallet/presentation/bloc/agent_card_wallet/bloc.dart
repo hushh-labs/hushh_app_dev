@@ -307,28 +307,6 @@ class AgentCardWalletPageBloc
     });
   }
 
-  stripeCreatePaymentIntent(double amount, String currency) async {
-    try {
-      Map<String, dynamic> body = {
-        'amount': (amount * 100).toInt().toString(),
-        'currency': currency,
-        'payment_method_types[]': 'card'
-      };
-
-      var response = await post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization': 'Bearer ${Constants.StripeSecretKeyTest}',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
-      );
-      print('Payment Intent Body->>> ${response.body.toString()}');
-      return jsonDecode(response.body);
-    } catch (err) {
-      print('err charging user: ${err.toString()}');
-    }
-  }
 
   FutureOr<void> onSuccessCardUnlockEvent(OnSuccessCardUnlockEvent event,
       Emitter<AgentCardWalletPageState> emit) async {
