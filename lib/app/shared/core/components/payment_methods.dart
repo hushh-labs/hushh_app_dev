@@ -3,7 +3,6 @@ import 'package:double_back_to_close/double_back_to_close.dart';
 import 'package:pay/pay.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/agent_card_wallet/bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/card_wallet/bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/hushh_meet_bloc/bloc.dart';
@@ -271,26 +270,10 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
                         Navigator.pop(context);
                       }
                     } else if (selectedPaymentMethod == PaymentMethods.card) {
-                      final paymentIntent = await sl<AgentCardWalletPageBloc>()
-                          .stripeCreatePaymentIntent(
-                              args.amount,
-                              sl<HomePageBloc>().currency?.name ??
-                                  defaultCurrency.name);
-                      await Stripe.instance.initPaymentSheet(
-                          paymentSheetParameters: SetupPaymentSheetParameters(
-                              paymentIntentClientSecret:
-                                  paymentIntent!['client_secret'],
-                              appearance: const PaymentSheetAppearance(
-                                  colors: PaymentSheetAppearanceColors(
-                                      primary: Color(0xFFA342FF))),
-                              style: ThemeMode.dark,
-                              merchantDisplayName: 'Hushh AI'));
-                      await Stripe.instance
-                          .presentPaymentSheet()
-                          .then((value) async {
-                        args.onPaymentDone();
-                        Navigator.pop(context);
-                      });
+                      // Card payment functionality removed
+                      // Use alternative payment methods like Razorpay or Google Pay
+                      args.onPaymentFailed();
+                      Navigator.pop(context);
                     } else if (selectedPaymentMethod == PaymentMethods.gPay) {
                       var convertedAmount = await CurrencyConverter.convert(
                         from: Currency.usd,
