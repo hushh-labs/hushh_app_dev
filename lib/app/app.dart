@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:hushh_app/app/platforms/mobile/home/presentation/bloc/home_bloc/bloc.dart';
@@ -84,11 +83,6 @@ void app(Entity entity) async {
       // httpClient: await getSSLPinningClient()
     );
 
-    // Set the Stripe publishable key
-    if (!kIsWeb) {
-      Stripe.publishableKey =
-          const String.fromEnvironment('stripe_publishable_key');
-    }
 
     await AppLocalStorage.initialize();
     try {
