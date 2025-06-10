@@ -545,6 +545,76 @@ flutter_stripe_web:
 
 ---
 
+## Login Services Compliance Issue
+
+**Date:** 11/06/2025  
+**Guideline:** 4.8 - Design - Login Services
+
+### Problem Description
+
+Apple requires that apps using third-party login services (like Google Sign-In) must offer an equivalent login option that meets all of the following requirements:
+
+1. **Limited data collection** - Only user's name and email address
+2. **Email privacy option** - Users can keep email private from all parties
+3. **No advertising data collection** - Without explicit user consent
+
+**Apple's Feedback:** The app uses Google Sign-In but does not appear to offer an equivalent login option that meets all the above requirements.
+
+### Solution Implemented
+
+Enabled Apple Sign-In as the compliant login option while maintaining user preferences:
+
+#### Changes Made:
+
+1. **Re-enabled Apple Sign-In:**
+   - Uncommented Apple Sign-In integration for iOS devices
+   - Added Apple Sign-In as second option (after phone, before Google)
+   - Apple Sign-In automatically meets all Guideline 4.8 requirements
+
+2. **Strategic Login Order:**
+   - **Primary:** Phone/OTP login (customer preference - 98% prefer this)
+   - **Secondary:** Apple Sign-In (Apple compliance requirement)
+   - **Tertiary:** Google Sign-In (existing functionality)
+
+3. **Privacy Compliance:**
+   - Phone/OTP: Minimal data collection (phone number only)
+   - Apple Sign-In: Built-in privacy features (hide email, limited data)
+   - Google Sign-In: Available but not primary option
+
+#### Technical Implementation:
+
+**Login Options Order:**
+```dart
+List<LoginMode> socialMethods = [
+  LoginMode.phone,    // Primary - customer preference
+  LoginMode.apple,    // iOS only - Apple compliance  
+  LoginMode.google,   // Secondary option
+];
+```
+
+**Platform-Specific Logic:**
+- **iOS:** Shows Phone → Apple Sign-In → Google Sign-In
+- **Android:** Shows Phone → Google Sign-In (no Apple Sign-In needed)
+
+### Key Improvements
+
+- ✅ **Apple Compliance:** Apple Sign-In meets all Guideline 4.8 requirements
+- ✅ **Customer Preference:** Phone/OTP remains primary option (98% customer preference)
+- ✅ **Privacy First:** Minimal data collection with phone/OTP login
+- ✅ **Flexible Options:** Multiple login methods for user choice
+- ✅ **Platform Optimized:** Different options for iOS vs Android
+
+### User Experience Impact
+
+- **Existing Users:** No change - can continue using phone/OTP or Google
+- **New iOS Users:** See Apple Sign-In option for enhanced privacy
+- **Privacy-Conscious Users:** Can choose Apple Sign-In for maximum privacy
+- **Survey Results:** 98% customers prefer phone/OTP (still primary option)
+
+**Status:** ✅ Fixed - Apple Sign-In enabled for Guideline 4.8 compliance while preserving customer preferences
+
+---
+
 <!-- Date Submitted
 May 27, 2025 at 12:04 PM
 Submission ID

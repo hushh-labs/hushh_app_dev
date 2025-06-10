@@ -26,18 +26,18 @@ class MainAuthPage extends StatefulWidget {
 
 class _MainAuthPageState extends State<MainAuthPage> {
   List<LoginMode> socialMethods = [
+    LoginMode.phone,  // Primary option - meets Apple's privacy requirements
     LoginMode.google,
-    LoginMode.phone,
   ];
 
   @override
   void initState() {
     super.initState();
     sl<AuthPageBloc>().add(const InitializeEvent(true));
-    // Apple sign-in temporarily disabled for App Store release. See ankitdev.md for details.
-    // if (Platform.isIOS) {
-    //   socialMethods.insert(1, LoginMode.apple);
-    // }
+    // Enable Apple Sign-In for App Store compliance (Guideline 4.8)
+    if (Platform.isIOS) {
+      socialMethods.insert(1, LoginMode.apple);  // Insert after phone, before Google
+    }
 
     // Debug: Print all important policy URLs
     print(
