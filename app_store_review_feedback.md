@@ -465,6 +465,85 @@ if (Platform.isIOS) {
 
 **Status:** ✅ Fixed - iOS app crash issue completely resolved
 
+---
+
+## Stripe/PassKit Framework Complete Removal
+
+**Date:** 11/06/2025  
+**Guideline:** 2.1 - Information Needed
+
+### Problem Description
+
+Apple detected PassKit framework in the app binary but could not find any Apple Pay implementation. This was caused by the `flutter_stripe` package automatically including the StripeApplePay framework, which contains PassKit references, even though we only used Stripe for card payments and not Apple Pay.
+
+**Apple's Feedback:** The app binary includes the PassKit framework for implementing Apple Pay, but we were unable to verify any integration of Apple Pay within the app.
+
+### Solution Implemented
+
+Completely removed all Stripe dependencies and functionality to eliminate PassKit framework inclusion:
+
+#### Changes Made:
+
+1. **Removed Stripe Dependencies:**
+   - Removed `flutter_stripe` and `flutter_stripe_web` packages from `pubspec.yaml`
+   - Kept `pay` package for Google Pay functionality only
+
+2. **Removed Stripe Code:**
+   - Removed Stripe import and initialization from `app.dart`
+   - Removed Stripe payment logic from `payment_methods.dart`
+   - Removed Stripe secret keys from `constants.dart`
+   - Removed `stripeCreatePaymentIntent` method from agent card wallet bloc
+
+3. **Updated Payment Options:**
+   - Disabled card payment option (shows fallback message)
+   - Preserved Google Pay, UPI, Razorpay, and Hushh Coins functionality
+   - Users can still make payments through alternative methods
+
+4. **Cleaned iOS Dependencies:**
+   - Ran `flutter clean` to remove all build artifacts
+   - Regenerated iOS dependencies without Stripe frameworks
+   - Eliminated PassKit framework references completely
+
+#### Technical Details:
+
+**Removed Dependencies:**
+```yaml
+# REMOVED from pubspec.yaml
+flutter_stripe:
+flutter_stripe_web:
+```
+
+**Removed Code:**
+- `import 'package:flutter_stripe/flutter_stripe.dart';`
+- `Stripe.publishableKey` initialization
+- Stripe payment sheet implementation
+- Stripe API calls and secret keys
+
+**Preserved Functionality:**
+- Google Pay using `pay` package
+- UPI payments
+- Razorpay integration
+- Hushh Coins system
+
+### Key Improvements
+
+- ✅ **No PassKit framework** - Completely eliminated from app binary
+- ✅ **No Apple Pay references** - All Stripe/Apple Pay code removed
+- ✅ **Alternative payments preserved** - Users can still make payments
+- ✅ **Clean codebase** - No unused payment frameworks
+- ✅ **Apple compliance** - No PassKit without Apple Pay implementation
+
+### Impact on Users
+
+- **Card payments:** Temporarily disabled (shows message to use alternatives)
+- **Google Pay:** Fully functional
+- **UPI payments:** Fully functional  
+- **Razorpay:** Fully functional
+- **Hushh Coins:** Fully functional
+
+**Status:** ✅ Fixed - PassKit framework completely removed, alternative payment methods preserved
+
+---
 
 <!-- Date Submitted
 May 27, 2025 at 12:04 PM
