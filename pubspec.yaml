@@ -177,8 +177,6 @@ dependencies:
   sign_in_with_apple:
 
   # payments
-  flutter_stripe:
-  flutter_stripe_web:
   pay:
   razorpay_web:
   webview_flutter_plus:
