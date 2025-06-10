@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hushh API Test Examples</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #000;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+        }
+        
+        .api-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .test-button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+        
+        .test-button.secondary {
+            background: #28a745;
+        }
+        
+        .test-button.secondary:hover {
+            background: #218838;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-registered {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-authenticated {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .user-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .user-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Hushh API Test Examples</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Test both User Registration API and User Profile API with real examples
+        </p>
+
+        <!-- API 1: User Registration -->
+        <div class="api-section">
+            <h2>📋 API 1: User Registration (Step 1)</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">First Name *</label>
+                    <input type="text" class="form-input" id="regFirstName" value="John" placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-input" id="regLastName" value="Doe" placeholder="Enter last name">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Email *</label>
+                <input type="email" class="form-input" id="regEmail" value="john.doe@example.com" placeholder="Enter email">
+            </div>
+            
+            <button class="test-button" onclick="testUserRegistration()">
+                ➕ Register New User
+            </button>
+            
+            <button class="test-button secondary" onclick="testCheckEmail()">
+                📧 Check Email Exists
+            </button>
+            
+            <button class="test-button secondary" onclick="testGetRegisteredUsers()">
+                👥 Get Registered Users
+            </button>
+            
+            <div id="registrationResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- API 2: User Profile -->
+        <div class="api-section">
+            <h2>👤 API 2: User Profile (Step 2)</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Hushh ID (from Step 1)</label>
+                <input type="text" class="form-input" id="profileHushhId" placeholder="hushh_1736164800000_abc123">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="profilePhone" value="+1234567890" placeholder="+1234567890">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Country Code</label>
+                    <input type="text" class="form-input" id="profileCountryCode" value="+1" placeholder="+1">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select class="form-input" id="profileGender">
+                        <option value="">Select Gender</option>
+                        <option value="male" selected>Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" class="form-input" id="profileDob" value="1990-01-15">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">User Coins</label>
+                    <input type="number" class="form-input" id="profileCoins" value="100" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reason for Using Hushh</label>
+                    <input type="text" class="form-input" id="profileReason" value="Personal use" placeholder="Personal use">
+                </div>
+            </div>
+            
+            <button class="test-button" onclick="testCompleteProfile()">
+                ✅ Complete Profile
+            </button>
+            
+            <button class="test-button secondary" onclick="testCheckUserForProfile()">
+                🔍 Check User Status
+            </button>
+            
+            <button class="test-button secondary" onclick="testGetAuthenticatedUsers()">
+                👥 Get Authenticated Users
+            </button>
+            
+            <button class="test-button secondary" onclick="testGetProfileStats()">
+                📊 Get Profile Stats
+            </button>
+            
+            <div id="profileResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Complete Flow Test -->
+        <div class="api-section">
+            <h2>🔄 Complete Two-Step Flow Test</h2>
+            <p>Test the complete user creation flow from registration to profile completion.</p>
+            
+            <button class="test-button" onclick="testCompleteFlow()" style="background: #dc3545;">
+                🚀 Test Complete Flow
+            </button>
+            
+            <div id="flowResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Recent Users Display -->
+        <div class="api-section">
+            <h2>👥 Recent Users</h2>
+            <button class="test-button secondary" onclick="loadRecentUsers()">
+                🔄 Load Recent Users
+            </button>
+            
+            <div id="recentUsers" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Include API Files -->
+    <script src="user_registration_api.js"></script>
+    <script src="user_profile_api.js"></script>
+
+    <script>
+        // Initialize APIs
+        const registrationAPI = new UserRegistrationAPI();
+        const profileAPI = new UserProfileAPI();
+        
+        // Helper function to display results
+        function displayResult(elementId, result, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = JSON.stringify(result, null, 2);
+        }
+
+        // Test User Registration
+        async function testUserRegistration() {
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+            
+            try {
+                const result = await registrationAPI.registerUser({
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email
+                });
+                
+                displayResult('registrationResult', result, result.success);
+                
+                // Auto-fill hushh_id for profile completion
+                if (result.success && result.data.hushh_id) {
+                    document.getElementById('profileHushhId').value = result.data.hushh_id;
+                }
+                
+            } catch (error) {
+                displayResult('registrationResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Check Email
+        async function testCheckEmail() {
+            const email = document.getElementById('regEmail').value;
+            
+            try {
+                const result = await registrationAPI.checkEmailExists(email);
+                displayResult('registrationResult', result, true);
+            } catch (error) {
+                displayResult('registrationResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Get Registered Users
+        async function testGetRegisteredUsers() {
+            try {
+                const result = await registrationAPI.getRegisteredUsers({ limit: 10 });
+                displayResult('registrationResult', result, result.success);
+            } catch (error) {
+                displayResult('registrationResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Complete Profile
+        async function testCompleteProfile() {
+            const hushhId = document.getElementById('profileHushhId').value;
+            
+            if (!hushhId) {
+                displayResult('profileResult', { error: 'Please provide a hushh_id' }, false);
+                return;
+            }
+            
+            const formData = {
+                phone_number: document.getElementById('profilePhone').value,
+                country_code: document.getElementById('profileCountryCode').value,
+                gender: document.getElementById('profileGender').value,
+                dob: document.getElementById('profileDob').value,
+                user_coins: parseInt(document.getElementById('profileCoins').value) || 100,
+                selected_reason_for_using_hushh: document.getElementById('profileReason').value
+            };
+            
+            try {
+                const result = await profileAPI.completeProfile(hushhId, formData);
+                displayResult('profileResult', result, result.success);
+            } catch (error) {
+                displayResult('profileResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Check User for Profile
+        async function testCheckUserForProfile() {
+            const hushhId = document.getElementById('profileHushhId').value;
+            
+            if (!hushhId) {
+                displayResult('profileResult', { error: 'Please provide a hushh_id' }, false);
+                return;
+            }
+            
+            try {
+                const result = await profileAPI.checkUserForProfileCompletion(hushhId);
+                displayResult('profileResult', result, result.success);
+            } catch (error) {
+                displayResult('profileResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Get Authenticated Users
+        async function testGetAuthenticatedUsers() {
+            try {
+                const result = await profileAPI.getAuthenticatedUsers({ limit: 10 });
+                displayResult('profileResult', result, result.success);
+            } catch (error) {
+                displayResult('profileResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Get Profile Stats
+        async function testGetProfileStats() {
+            try {
+                const result = await profileAPI.getProfileStats();
+                displayResult('profileResult', result, result.success);
+            } catch (error) {
+                displayResult('profileResult', { error: error.message }, false);
+            }
+        }
+
+        // Test Complete Flow
+        async function testCompleteFlow() {
+            const flowElement = document.getElementById('flowResult');
+            flowElement.style.display = 'block';
+            flowElement.className = 'result success';
+            
+            let log = '🚀 Starting Complete Two-Step Flow Test...\n\n';
+            
+            try {
+                // Step 1: Register User
+                log += '📋 Step 1: Registering user...\n';
+                const timestamp = Date.now();
+                const testEmail = `test.user.${timestamp}@example.com`;
+                
+                const regResult = await registrationAPI.registerUser({
+                    first_name: 'Test',
+                    last_name: 'User',
+                    email: testEmail
+                });
+                
+                if (!regResult.success) {
+                    throw new Error(`Registration failed: ${regResult.error}`);
+                }
+                
+                log += `✅ User registered successfully!\n`;
+                log += `   Hushh ID: ${regResult.data.hushh_id}\n`;
+                log += `   Status: ${regResult.data.status}\n\n`;
+                
+                // Step 2: Complete Profile
+                log += '👤 Step 2: Completing profile...\n';
+                const profileResult = await profileAPI.completeProfile(regResult.data.hushh_id, {
+                    phone_number: '+1234567890',
+                    country_code: '+1',
+                    gender: 'male',
+                    dob: '1990-01-15',
+                    user_coins: 150,
+                    selected_reason_for_using_hushh: 'Testing purposes'
+                });
+                
+                if (!profileResult.success) {
+                    throw new Error(`Profile completion failed: ${profileResult.error}`);
+                }
+                
+                log += `✅ Profile completed successfully!\n`;
+                log += `   Status: ${profileResult.data.status}\n`;
+                log += `   Completed fields: ${profileResult.data.completed_fields.join(', ')}\n\n`;
+                
+                // Step 3: Verify Final Status
+                log += '🔍 Step 3: Verifying final user status...\n';
+                const userResult = await registrationAPI.getUserById(regResult.data.hushh_id);
+                
+                if (userResult.success) {
+                    log += `✅ User verification successful!\n`;
+                    log += `   Final status: ${userResult.data.onboard_status}\n`;
+                    log += `   User coins: ${userResult.data.user_coins}\n`;
+                    log += `   Phone: ${userResult.data.phone_number}\n\n`;
+                }
+                
+                log += '🎉 Complete flow test successful!\n';
+                log += `   Total time: ${Date.now() - timestamp}ms\n`;
+                
+                flowElement.textContent = log;
+                
+            } catch (error) {
+                log += `❌ Flow test failed: ${error.message}\n`;
+                flowElement.className = 'result error';
+                flowElement.textContent = log;
+            }
+        }
+
+        // Load Recent Users
+        async function loadRecentUsers() {
+            try {
+                const [regResult, authResult] = await Promise.all([
+                    registrationAPI.getRegisteredUsers({ limit: 5 }),
+                    profileAPI.getAuthenticatedUsers({ limit: 5 })
+                ]);
+                
+                const recentUsersDiv = document.getElementById('recentUsers');
+                let html = '';
+                
+                if (regResult.success && regResult.data.length > 0) {
+                    html += '<h4>🟡 Recently Registered Users (Incomplete Profiles)</h4>';
+                    regResult.data.forEach(user => {
+                        html += createUserCard(user);
+                    });
+                }
+                
+                if (authResult.success && authResult.data.length > 0) {
+                    html += '<h4>🟢 Recently Authenticated Users (Complete Profiles)</h4>';
+                    authResult.data.forEach(user => {
+                        html += createUserCard(user);
+                    });
+                }
+                
+                if (!html) {
+                    html = '<p style="color: #666; text-align: center; padding: 20px;">No users found. Create some test users first!</p>';
+                }
+                
+                recentUsersDiv.innerHTML = html;
+                
+            } catch (error) {
+                document.getElementById('recentUsers').innerHTML = 
+                    `<p style="color: #dc3545;">Error loading users: ${error.message}</p>`;
+            }
+        }
+
+        // Create User Card HTML
+        function createUserCard(user) {
+            const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown User';
+            const statusClass = user.onboard_status === 'authenticated' ? 'status-authenticated' : 'status-registered';
+            const joinDate = new Date(user.creationtime).toLocaleDateString();
+            
+            return `
+                <div class="user-card">
+                    <div class="user-header">
+                        <span class="user-name">${displayName}</span>
+                        <span class="status-indicator ${statusClass}">${user.onboard_status}</span>
+                    </div>
+                    <div class="user-details">
+                        <strong>Email:</strong> ${user.email}<br>
+                        <strong>Hushh ID:</strong> ${user.hushh_id}<br>
+                        <strong>Joined:</strong> ${joinDate}<br>
+                        ${user.phone_number ? `<strong>Phone:</strong> ${user.phone_number}<br>` : ''}
+                        ${user.user_coins !== undefined ? `<strong>Coins:</strong> ${user.user_coins}<br>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Auto-load recent users on page load
+        window.addEventListener('load', () => {
+            loadRecentUsers();
+        });
+    </script>
+</body>
+</html>

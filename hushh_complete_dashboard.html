@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hushh User Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            color: #212529;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab {
+            padding: 12px 30px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+
+        .nav-tab.active {
+            background: #000000;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #f8f9fa;
+            color: #000000;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            background: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #000000;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #000000;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #000000;
+            transform: translateY(-2px);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f3f4;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid #f1f3f4;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #000000 0%, #434343 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-right: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #000000;
+        }
+
+        .user-info p {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .user-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 0.95rem;
+            color: #000000;
+            font-weight: 500;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-small {
+            padding: 10px 18px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-edit {
+            background: #000000;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #333333;
+            transform: translateY(-1px);
+        }
+
+        .btn-view {
+            background: white;
+            color: #000000;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-view:hover {
+            background: #f8f9fa;
+            border-color: #000000;
+            transform: translateY(-1px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #000000;
+            background: #f8f9fa;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #000000;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f1f3f4;
+            border-left: 4px solid #000000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .error-message {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #fed7d7;
+            display: none;
+        }
+
+        .success-message {
+            background: #f0fff4;
+            color: #38a169;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid #9ae6b4;
+            display: none;
+        }
+
+        .api-docs {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f3f4;
+        }
+
+        .api-section {
+            margin-bottom: 40px;
+        }
+
+        .api-section h3 {
+            color: #000000;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .endpoint {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .method {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 15px;
+        }
+
+        .method.get { background: #e3f2fd; color: #1976d2; }
+        .method.post { background: #e8f5e8; color: #388e3c; }
+        .method.patch { background: #fff3e0; color: #f57c00; }
+        .method.delete { background: #ffebee; color: #d32f2f; }
+
+        .endpoint-url {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: #000000;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to { 
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                max-width: none;
+            }
+            
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .nav-tab {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hushh User Management</h1>
+            <p>Complete user management dashboard with API documentation</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('api-docs')">📚 API Documentation</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="controls">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search users by name, email, or ID...">
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="openAddUserModal()">
+                        ➕ Add User
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshUsers()">
+                        🔄 Refresh
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportUsers('json')">
+                        📄 Export JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportUsers('csv')">
+                        📊 Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeUsers">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="newUsers">0</div>
+                    <div class="stat-label">New This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCoins">0</div>
+                    <div class="stat-label">Total Coins</div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading users...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <div class="users-grid" id="usersGrid">
+                <!-- Users will be populated here -->
+            </div>
+        </div>
+
+        <!-- API Documentation Tab -->
+        <div id="api-docs" class="tab-content">
+            <div class="api-docs">
+                <h2 style="color: #000000; margin-bottom: 30px; font-size: 2rem;">Hushh User API Documentation</h2>
+                
+                <div class="api-section">
+                    <h3>🔗 Base URL</h3>
+                    <div class="endpoint-url">https://rpmzykoxqnbozgdoqbpc.supabase.co/rest/v1</div>
+                </div>
+
+                <div class="api-section">
+                    <h3>🔑 Authentication</h3>
+                    <p style="margin-bottom: 15px;">All requests require the following headers:</p>
+                    <div class="code-block">
+apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwbXp5a294cW5ib3pnZG9xYnBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE5Mjc5NzEsImV4cCI6MjAxNzUwMzk3MX0.3GwG8YQKwZSWfGgTBEEA47YZAZ-Nr4HiirYPWiZtpZ0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwbXp5a294cW5ib3pnZG9xYnBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE5Mjc5NzEsImV4cCI6MjAxNzUwMzk3MX0.3GwG8YQKwZSWfGgTBEEA47YZAZ-Nr4HiirYPWiZtpZ0
+Content-Type: application/json</div>
+                </div>
+
+                <div class="api-section">
+                    <h3>📋 CRUD Operations</h3>
+                    
+                    <!-- GET All Users -->
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>Get All Users</strong>
+                        </div>
+                        <div class="endpoint-url">/users?select=*&order=accountCreation.desc</div>
+                        <p><strong>Description:</strong> Retrieve all users ordered by creation date</p>
+                        <p><strong>Response:</strong></p>
+                        <div class="code-block">[
+  {
+    "hushh_id": "hushh_1234567890_abc123",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone_number": "+1234567890",
+    "gender": "male",
+    "country": "USA",
+    "city": "New York",
+    "user_coins": 100,
+    "accountCreation": "2024-01-15T10:30:00Z",
+    "is_hushh_app_user": true
+  }
+]</div>
+                    </div>
+
+                    <!-- POST Create User -->
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <strong>Create New User</strong>
+                        </div>
+                        <div class="endpoint-url">/users</div>
+                        <p><strong>Description:</strong> Create a new user in the system</p>
+                        <p><strong>Request Body:</strong></p>
+                        <div class="code-block">{
+  "hushh_id": "hushh_1234567890_abc123",
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "john.doe@example.com",
+  "phone_number": "+1234567890",
+  "gender": "male",
+  "country": "USA",
+  "city": "New York",
+  "address": "123 Main St",
+  "dob": "1990-01-15",
+  "user_coins": 0,
+  "selected_reason_for_using_hushh": "Personal use",
+  "is_hushh_app_user": true,
+  "private_mode": false,
+  "onboard_status": "authenticated",
+  "accountCreation": "2024-01-15T10:30:00Z"
+}</div>
+                    </div>
+
+                    <!-- PATCH Update User -->
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method patch">PATCH</span>
+                            <strong>Update User</strong>
+                        </div>
+                        <div class="endpoint-url">/users?hushh_id=eq.{user_id}</div>
+                        <p><strong>Description:</strong> Update an existing user's information</p>
+                        <p><strong>Request Body:</strong></p>
+                        <div class="code-block">{
+  "first_name": "John Updated",
+  "last_name": "Doe Updated",
+  "email": "john.updated@example.com",
+  "phone_number": "+1234567891",
+  "user_coins": 150
+}</div>
+                    </div>
+
+                    <!-- Search Users -->
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>Search Users</strong>
+                        </div>
+                        <div class="endpoint-url">/users?or=(first_name.ilike.*{term}*,last_name.ilike.*{term}*,email.ilike.*{term}*)</div>
+                        <p><strong>Description:</strong> Search users by name, email, or ID</p>
+                        <p><strong>Parameters:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li><code>term</code> - Search term to filter users</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3>📊 Query Parameters</h3>
+                    <div class="code-block">
+# Pagination
+?limit=10&offset=20
+
+# Ordering
+?order=accountCreation.desc
+?order=first_name.asc
+
+# Filtering
+?is_hushh_app_user=eq.true
+?user_coins=gte.100
+?country=eq.USA
+
+# Select specific fields
+?select=hushh_id,first_name,email
+
+# Combine parameters
+?select=*&is_hushh_app_user=eq.true&order=accountCreation.desc&limit=50</div>
+                </div>
+
+                <div class="api-section">
+                    <h3>⚠️ Error Responses</h3>
+                    <div class="code-block">
+# 400 Bad Request
+{
+  "code": "PGRST116",
+  "details": "The result contains 0 rows",
+  "hint": null,
+  "message": "JSON object requested, multiple (or no) rows returned"
+}
+
+# 409 Conflict (Duplicate Email)
+{
+  "code": "23505",
+  "details": "Key (email)=(john@example.com) already exists.",
+  "hint": null,
+  "message": "duplicate key value violates unique constraint \"users_email_key\""
+}</div>
+                </div>
+
+                <div class="api-section">
+                    <h3>🔧 Example Usage</h3>
+                    <div class="code-block">
+# JavaScript/Fetch Example
+const response = await fetch('https://rpmzykoxqnbozgdoqbpc.supabase.co/rest/v1/users', {
+  method: 'GET',
+  headers: {
+    'apikey': 'your-api-key',
+    'Authorization': 'Bearer your-api-key',
+    'Content-Type': 'application/json'
+  }
+});
+
+const users = await response.json();
+
+# cURL Example
+curl -X GET \
+  'https://rpmzykoxqnbozgdoqbpc.supabase.co/rest/v1/users?select=*' \
+  -H 'apikey: your-api-key' \
+  -H 'Authorization: Bearer your-api-key' \
+  -H 'Content-Type: application/json'</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New User</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="userForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="firstName">First Name</label>
+                        <input type="text" class="form-input" id="firstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="lastName">Last Name</label>
+                        <input type="text" class="form-input" id="lastName" name="last_name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" class="form-input" id="email" name="email" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">Phone Number</label>
+                        <input type="tel" class="form-input" id="phoneNumber" name="phone_number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="gender">Gender</label>
+                        <select class="form-input" id="gender" name="gender">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="country">Country</label>
+                        <input type="text" class="form-input" id="country" name="country">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="city">City</label>
+                        <input type="text" class="form-input" id="city" name="city">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="address">Address</label>
+                    <input type="text" class="form-input" id="address" name="address">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input type="date" class="form-input" id="dob" name="dob">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="userCoins">User Coins</label>
+                        <input type="number" class="form-input" id="userCoins" name="user_coins" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reasonForUsing">Reason for Using Hushh</label>
+                    <input type="text" class="form-input" id="reasonForUsing" name="selected_reason_for_using_hushh">
+                </div>
+
+                <div class="button-group" style="justify-content: flex-end; margin-top: 30px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // User API Handler
+        class UserAPI {
+            constructor() {
+                this.supabaseUrl = 'https://rpmzykoxqnbozgdoqbpc.supabase.co';
+                this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwbXp5a294cW5ib3pnZG9xYnBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE5Mjc5NzEsImV4cCI6MjAxNzUwMzk3MX0.3GwG8YQKwZSWfGgTBEEA47YZAZ-Nr4HiirYPWiZtpZ0';
+                this.apiUrl = `${this.supabaseUrl}/rest/v1`;
+                this.headers = {
+                    'apikey': this.supabaseKey,
+                    'Authorization': `Bearer ${this.supabaseKey}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                };
+            }
+
+            generateHushhId() {
+                return 'hushh_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            prepareUserData(formData) {
+                const userData = {
+                    hushh_id: this.generateHushhId(),
+                    first_name: formData.first_name || null,
+                    last_name: formData.last_name || null,
+                    email: formData.email || '',
+                    phone_number: formData.phone_number || null,
+                    gender: formData.gender || null,
+                    country: formData.country || null,
+                    city: formData.city || null,
+                    address: formData.address || null,
+                    dob: formData.dob || null,
+                    user_coins: parseInt(formData.user_coins) || 0,
+                    selected_reason_for_using_hushh: formData.selected_reason_for_using_hushh || null,
+                    is_hushh_app_user: true,
+                    private_mode: false,
+                    onboard_status: 'authenticated',
+                    accountCreation: new Date().toISOString(),
+                    creationtime: new Date().toISOString()
+                };
+
+                if (userData.first_name || userData.last_name) {
+                    userData.name = `${userData.first_name || ''} ${userData.last_name || ''}`.trim();
+                }
+
+                return userData;
+            }
+
+            async getUsers(filters = {}) {
+                try {
+                    let url = `${this.apiUrl}/users?select=*`;
+                    
+                    if (filters.search) {
+                        const searchTerm = encodeURIComponent(filters.search);
+                        url += `&or=(first_name.ilike.*${searchTerm}*,last_name.ilike.*${searchTerm}*,email.ilike.*${searchTerm}*,hushh_id.ilike.*${searchTerm}*)`;
+                    }
+
+                    url += '&order=accountCreation.desc';
+
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: this.headers
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const users = await response.json();
+                    return { success: true, data: users, count: users.length };
+
+                } catch (error) {
+                    return { success: false, error: error.message || 'Failed to fetch users' };
+                }
+            }
+
+            async createUser(formData) {
+                try {
+                    const userData = this.prepareUserData(formData);
+
+                    if (!userData.first_name || userData.first_name.length < 2) {
+                        throw new Error('First name must be at least 2 characters long');
+                    }
+
+                    if (!userData.email) {
+                        throw new Error('Email is required');
+                    }
+
+                    const response = await fetch(`${this.apiUrl}/users`, {
+                        method: 'POST',
+                        headers: this.headers,
+                        body: JSON.stringify(userData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const newUser = await response.json();
+                    return { success: true, data: newUser[0] || newUser, message: 'User created successfully' };
+
+                } catch (error) {
+                    return { success: false, error: error.message || 'Failed to create user' };
+                }
+            }
+
+            async getUserStats() {
+                try {
+                    const totalResponse = await fetch(`${this.apiUrl}/users?select=hushh_id,accountCreation,user_coins,is_hushh_app_user`, {
+                        method: 'GET',
+                        headers: this.headers
+                    });
+
+                    if (!totalResponse.ok) {
+                        throw new Error(`HTTP error! status: ${totalResponse.status}`);
+                    }
+
+                    const users = await totalResponse.json();
+                    const totalUsers = users.length;
+                    const activeUsers = users.filter(user => user.is_hushh_app_user).length;
+
+                    const currentMonth = new Date().getMonth();
+                    const currentYear = new Date().getFullYear();
+                    const newUsers = users.filter(user => {
+                        if (!user.accountCreation) return false;
+                        const userDate = new Date(user.accountCreation);
+                        return userDate.getMonth() === currentMonth && userDate.getFullYear() === currentYear;
+                    }).length;
+
+                    const totalCoins = users.reduce((sum, user) => sum + (user.user_coins || 0), 0);
+
+                    return { success: true, data: { totalUsers, activeUsers, newUsers, totalCoins } };
+
+                } catch (error) {
+                    return { success: false, error: error.message || 'Failed to fetch user statistics' };
+                }
+            }
+
+            async exportUsers(format = 'json') {
+                try {
+                    const result = await this.getUsers();
+                    
+                    if (!result.success) {
+                        throw new Error(result.error);
+                    }
+
+                    const users = result.data;
+
+                    if (format === 'csv') {
+                        return this.convertToCSV(users);
+                    }
+
+                    return { success: true, data: users, format: 'json' };
+
+                } catch (error) {
+                    return { success: false, error: error.message || 'Failed to export users' };
+                }
+            }
+
+            convertToCSV(users) {
+                if (users.length === 0) {
+                    return { success: true, data: '', format: 'csv' };
+                }
+
+                const headers = ['hushh_id', 'first_name', 'last_name', 'email', 'phone_number', 'gender', 'country', 'city', 'address', 'dob', 'user_coins', 'accountCreation'];
+
+                const csvContent = [
+                    headers.join(','),
+                    ...users.map(user => 
+                        headers.map(header => {
+                            const value = user[header] || '';
+                            return `"${String(value).replace(/"/g, '""')}"`;
+                        }).join(',')
+                    )
+                ].join('\n');
+
+                return { success: true, data: csvContent, format: 'csv' };
+            }
+        }
+
+        // User UI Handler
+        class UserUI {
+            constructor() {
+                this.currentUsers = [];
+                this.filteredUsers = [];
+                this.currentEditingUser = null;
+                this.searchTimeout = null;
+                this.isLoading = false;
+                
+                this.initializeEventListeners();
+                this.loadInitialData();
+            }
+
+            initializeEventListeners() {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        clearTimeout(this.searchTimeout);
+                        this.searchTimeout = setTimeout(() => {
+                            this.handleSearch(e.target.value);
+                        }, 300);
+                    });
+                }
+
+                const userForm = document.getElementById('userForm');
+                if (userForm) {
+                    userForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleFormSubmission();
+                    });
+                }
+
+                const modal = document.getElementById('userModal');
+                if (modal) {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            this.closeModal();
+                        }
+                    });
+                }
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeModal();
+                    }
+                });
+            }
+
+            async loadInitialData() {
+                await this.loadUsers();
+                await this.loadUserStats();
+            }
+
+            showLoading(show = true) {
+                const loading = document.getElementById('loading');
+                const usersGrid = document.getElementById('usersGrid');
+                
+                if (loading && usersGrid) {
+                    loading.style.display = show ? 'block' : 'none';
+                    usersGrid.style.display = show ? 'none' : 'grid';
+                }
+                
+                this.isLoading = show;
+            }
+
+            showError(message) {
+                const errorElement = document.getElementById('errorMessage');
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        errorElement.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            showSuccess(message) {
+                const successElement = document.getElementById('successMessage');
+                if (successElement) {
+                    successElement.textContent = message;
+                    successElement.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        successElement.style.display = 'none';
+                    }, 3000);
+                }
+            }
+
+            hideMessages() {
+                const errorElement = document.getElementById('errorMessage');
+                const successElement = document.getElementById('successMessage');
+                
+                if (errorElement) errorElement.style.display = 'none';
+                if (successElement) successElement.style.display = 'none';
+            }
+
+            async loadUsers() {
+                try {
+                    this.showLoading(true);
+                    this.hideMessages();
+
+                    const result = await userAPI.getUsers();
+                    
+                    if (result.success) {
+                        this.currentUsers = result.data;
+                        this.filteredUsers = [...this.currentUsers];
+                        this.renderUsers();
+                    } else {
+                        this.showError(result.error || 'Failed to load users');
+                    }
+                } catch (error) {
+                    this.showError('Network error: ' + error.message);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async loadUserStats() {
+                try {
+                    const result = await userAPI.getUserStats();
+                    
+                    if (result.success) {
+                        this.updateStatsDisplay(result.data);
+                    }
+                } catch (error) {
+                    console.error('Error loading stats:', error);
+                }
+            }
+
+            updateStatsDisplay(stats) {
+                const elements = {
+                    totalUsers: document.getElementById('totalUsers'),
+                    activeUsers: document.getElementById('activeUsers'),
+                    newUsers: document.getElementById('newUsers'),
+                    totalCoins: document.getElementById('totalCoins')
+                };
+
+                if (elements.totalUsers) elements.totalUsers.textContent = stats.totalUsers || 0;
+                if (elements.activeUsers) elements.activeUsers.textContent = stats.activeUsers || 0;
+                if (elements.newUsers) elements.newUsers.textContent = stats.newUsers || 0;
+                if (elements.totalCoins) elements.totalCoins.textContent = this.formatNumber(stats.totalCoins || 0);
+            }
+
+            formatNumber(num) {
+                if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                }
+                if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num.toString();
+            }
+
+            handleSearch(searchTerm) {
+                if (!searchTerm.trim()) {
+                    this.filteredUsers = [...this.currentUsers];
+                } else {
+                    const term = searchTerm.toLowerCase();
+                    this.filteredUsers = this.currentUsers.filter(user => {
+                        return (
+                            (user.first_name && user.first_name.toLowerCase().includes(term)) ||
+                            (user.last_name && user.last_name.toLowerCase().includes(term)) ||
+                            (user.email && user.email.toLowerCase().includes(term)) ||
+                            (user.hushh_id && user.hushh_id.toLowerCase().includes(term)) ||
+                            (user.name && user.name.toLowerCase().includes(term))
+                        );
+                    });
+                }
+                this.renderUsers();
+            }
+
+            renderUsers() {
+                const usersGrid = document.getElementById('usersGrid');
+                if (!usersGrid) return;
+
+                if (this.filteredUsers.length === 0) {
+                    usersGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 20px;">👥</div>
+                            <h3 style="color: #6c757d; margin-bottom: 10px;">No users found</h3>
+                            <p style="color: #6c757d;">Try adjusting your search or add a new user</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                usersGrid.innerHTML = this.filteredUsers.map(user => this.createUserCard(user)).join('');
+            }
+
+            createUserCard(user) {
+                const initials = this.getUserInitials(user);
+                const joinDate = this.formatDate(user.accountCreation);
+                const displayName = user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown User';
+                const displayEmail = user.email || 'No email';
+
+                return `
+                    <div class="user-card" data-user-id="${user.hushh_id}">
+                        <div class="user-header">
+                            <div class="user-avatar">${initials}</div>
+                            <div class="user-info">
+                                <h3>${this.escapeHtml(displayName)}</h3>
+                                <p>${this.escapeHtml(displayEmail)}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <span class="detail-label">User ID</span>
+                                <span class="detail-value">${this.escapeHtml(user.hushh_id || 'N/A')}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Phone</span>
+                                <span class="detail-value">${this.escapeHtml(user.phone_number || 'N/A')}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Location</span>
+                                <span class="detail-value">${this.escapeHtml(this.getLocationString(user))}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Coins</span>
+                                <span class="detail-value">${user.user_coins || 0}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Gender</span>
+                                <span class="detail-value">${this.escapeHtml(user.gender || 'N/A')}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Joined</span>
+                                <span class="detail-value">${joinDate}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="user-actions">
+                            <button class="btn-small btn-view" onclick="userUI.viewUser('${user.hushh_id}')">
+                                👁️ View
+                            </button>
+                            <button class="btn-small btn-edit" onclick="userUI.editUser('${user.hushh_id}')">
+                                ✏️ Edit
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getUserInitials(user) {
+                const firstName = user.first_name || '';
+                const lastName = user.last_name || '';
+                
+                if (firstName && lastName) {
+                    return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+                } else if (firstName) {
+                    return firstName.charAt(0).toUpperCase();
+                } else if (user.email) {
+                    return user.email.charAt(0).toUpperCase();
+                }
+                return '?';
+            }
+
+            getLocationString(user) {
+                const parts = [];
+                if (user.city) parts.push(user.city);
+                if (user.country) parts.push(user.country);
+                return parts.join(', ') || 'N/A';
+            }
+
+            formatDate(dateString) {
+                if (!dateString) return 'N/A';
+                
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch (error) {
+                    return 'Invalid Date';
+                }
+            }
+
+            escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            openAddUserModal() {
+                this.currentEditingUser = null;
+                this.resetForm();
+                
+                const modal = document.getElementById('userModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                if (modalTitle) modalTitle.textContent = 'Add New User';
+                if (submitBtn) submitBtn.textContent = 'Add User';
+                if (modal) modal.style.display = 'block';
+                
+                setTimeout(() => {
+                    const firstInput = document.getElementById('firstName');
+                    if (firstInput) firstInput.focus();
+                }, 100);
+            }
+
+            resetForm() {
+                const form = document.getElementById('userForm');
+                if (form) {
+                    form.reset();
+                }
+                
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) submitBtn.style.display = 'block';
+            }
+
+            async handleFormSubmission() {
+                if (this.isLoading) return;
+
+                try {
+                    this.showLoading(true);
+                    this.hideMessages();
+
+                    const formData = this.getFormData();
+                    const result = await userAPI.createUser(formData);
+
+                    if (result.success) {
+                        this.showSuccess(result.message || 'User created successfully');
+                        this.closeModal();
+                        await this.loadUsers();
+                        await this.loadUserStats();
+                    } else {
+                        this.showError(result.error || 'Failed to create user');
+                    }
+                } catch (error) {
+                    this.showError('Error: ' + error.message);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            getFormData() {
+                const form = document.getElementById('userForm');
+                const formData = new FormData(form);
+                const data = {};
+                
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                
+                return data;
+            }
+
+            closeModal() {
+                const modal = document.getElementById('userModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+                this.resetForm();
+            }
+
+            viewUser(hushhId) {
+                // Placeholder for view functionality
+                console.log('View user:', hushhId);
+            }
+
+            editUser(hushhId) {
+                // Placeholder for edit functionality
+                console.log('Edit user:', hushhId);
+            }
+        }
+
+        // Global functions
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            const selectedContent = document.getElementById(tabName);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+            
+            // Add active class to clicked tab
+            const clickedTab = event.target;
+            clickedTab.classList.add('active');
+        }
+
+        function openAddUserModal() {
+            userUI.openAddUserModal();
+        }
+
+        function refreshUsers() {
+            userUI.loadUsers();
+            userUI.loadUserStats();
+        }
+
+        function closeModal() {
+            userUI.closeModal();
+        }
+
+        async function exportUsers(format) {
+            try {
+                const result = await userAPI.exportUsers(format);
+                
+                if (result.success) {
+                    const filename = `hushh_users_${new Date().toISOString().split('T')[0]}.${result.format}`;
+                    const blob = new Blob([result.data], { 
+                        type: result.format === 'csv' ? 'text/csv' : 'application/json' 
+                    });
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    userUI.showSuccess(`Users exported as ${format.toUpperCase()}`);
+                } else {
+                    userUI.showError(result.error || 'Failed to export users');
+                }
+            } catch (error) {
+                userUI.showError('Export error: ' + error.message);
+            }
+        }
+
+        // Initialize the application
+        const userAPI = new UserAPI();
+        const userUI = new UserUI();
+    </script>
+</body>
+</html>
