@@ -273,10 +273,6 @@ class Constants {
 
   //Forgot password tets
   static const proceed = "Proceed";
-  static const StripeSecretKeyTest =
-      "sk_test_51M2VQ0LYaD0u4Aj1Khu5C5vYZXO08vLUluF2FSD5yYp8QFF8EIuddEAkWmzc3bLX0nYDgrqMOs8Yn1uoC6vp6RRD00G1Is6hz4";
-  static const StripeSecretKeyLive =
-      "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";
 
   static const int otpLength = 6;
 
