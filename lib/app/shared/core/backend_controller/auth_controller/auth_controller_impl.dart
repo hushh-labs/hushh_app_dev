@@ -56,27 +56,63 @@ class AuthControllerImpl extends AuthController {
 
   @override
   Future<AuthResponse> signInWithApple() async {
-    final rawNonce = supabase.auth.generateRawNonce();
-    final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+    print('🍎 [APPLE_SIGN_IN] Starting Apple Sign-In process...');
+    
+    try {
+      print('🍎 [APPLE_SIGN_IN] Generating nonce...');
+      final rawNonce = supabase.auth.generateRawNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+      print('🍎 [APPLE_SIGN_IN] Nonce generated successfully');
+      print('🍎 [APPLE_SIGN_IN] Raw nonce length: ${rawNonce.length}');
+      print('🍎 [APPLE_SIGN_IN] Hashed nonce length: ${hashedNonce.length}');
 
-    final credential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      nonce: hashedNonce,
-    );
+      print('🍎 [APPLE_SIGN_IN] Requesting Apple ID credential...');
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+      print('🍎 [APPLE_SIGN_IN] Apple ID credential received successfully');
+      print('🍎 [APPLE_SIGN_IN] User ID: ${credential.userIdentifier}');
+      print('🍎 [APPLE_SIGN_IN] Email: ${credential.email ?? "Not provided"}');
+      print('🍎 [APPLE_SIGN_IN] Full Name: ${credential.givenName ?? "Not provided"} ${credential.familyName ?? "Not provided"}');
+      print('🍎 [APPLE_SIGN_IN] Authorization Code: ${credential.authorizationCode != null ? "Present" : "Null"}');
+      print('🍎 [APPLE_SIGN_IN] Identity Token: ${credential.identityToken != null ? "Present" : "Null"}');
 
-    final idToken = credential.identityToken;
-    if (idToken == null) {
-      throw const AuthException(
-          'Could not find ID Token from generated credential.');
+      final idToken = credential.identityToken;
+      if (idToken == null) {
+        print('🍎 [APPLE_SIGN_IN] ERROR: No ID Token found in credential');
+        throw const AuthException(
+            'Could not find ID Token from generated credential.');
+      }
+      
+      print('🍎 [APPLE_SIGN_IN] ID Token found, length: ${idToken.length}');
+      print('🍎 [APPLE_SIGN_IN] Signing in with Supabase...');
+      
+      final result = await supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: idToken,
+        nonce: rawNonce,
+      );
+      
+      print('🍎 [APPLE_SIGN_IN] Supabase sign-in successful!');
+      print('🍎 [APPLE_SIGN_IN] User ID: ${result.user?.id}');
+      print('🍎 [APPLE_SIGN_IN] User Email: ${result.user?.email}');
+      print('🍎 [APPLE_SIGN_IN] Session: ${result.session?.accessToken != null ? "Present" : "Null"}');
+      
+      return result;
+      
+    } catch (e) {
+      print('🍎 [APPLE_SIGN_IN] ERROR: $e');
+      print('🍎 [APPLE_SIGN_IN] Error type: ${e.runtimeType}');
+      if (e is SignInWithAppleException) {
+        print('🍎 [APPLE_SIGN_IN] Apple Sign-In Exception: $e');
+        print('🍎 [APPLE_SIGN_IN] Apple Sign-In Exception Details: ${e.toString()}');
+      }
+      rethrow;
     }
-    return supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.apple,
-      idToken: idToken,
-      nonce: rawNonce,
-    );
   }
 
   @override

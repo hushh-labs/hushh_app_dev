@@ -137,6 +137,203 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
     }
   }
 
+  Future<void> _navigateToSignUpForNewUser(BuildContext context) async {
+    print('🍎 [AUTH_BLOC] Navigating to signup for new Apple user...');
+    
+    // Create temp user for Apple Sign-In without email
+    final tempUser = TempUserModel(
+        avatar: null,
+        countryCode: selectedCountry?.dialCode,
+        name: null,
+        phoneNumber: null,
+        email: null);
+    AppLocalStorage.updateTempUser(tempUser);
+    
+    sl<SignUpPageBloc>().add(SignUpInitializeEvent());
+    AppLocalStorage.updateUserOnboardingStatus(UserOnboardStatus.signUpForm);
+    
+    if (sl<HomePageBloc>().entity == Entity.user) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.bottomToTop,
+              child: const UserGuidePage()));
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.agentHome,
+          arguments: AgentHomePageArgs(tabValue: 1));
+    }
+  }
+
+  Future<void> _showAppleEmailDialog(BuildContext context) async {
+    print('🍎 [AUTH_BLOC] Showing Apple-style email dialog...');
+    
+    final TextEditingController emailController = TextEditingController();
+    String? enteredEmail;
+    
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          title: Column(
+            children: [
+              Icon(
+                Icons.apple,
+                size: 64,
+                color: Colors.black,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Complete Your Sign In',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'To complete your Apple Sign-In, please provide your email address.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black.withOpacity(0.8),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  hintText: 'Enter your email',
+                  hintStyle: TextStyle(
+                    color: Colors.black.withOpacity(0.5),
+                    fontSize: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Color(0xFF007AFF), width: 2),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            Column(
+              children: [
+                Divider(height: 1, color: Colors.grey.shade300),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          // Sign out and go back to auth
+                          auth.signOut();
+                        },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Color(0xFF007AFF),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 44,
+                      color: Colors.grey.shade300,
+                    ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          final emailText = emailController.text.trim();
+                          if (emailText.isNotEmpty && emailText.contains('@')) {
+                            enteredEmail = emailText;
+                            Navigator.of(context).pop(emailText);
+                          } else {
+                            // Show error
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please enter a valid email address'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        ),
+                        child: Text(
+                          'Continue',
+                          style: TextStyle(
+                            color: Color(0xFF007AFF),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+          actionsPadding: EdgeInsets.zero,
+          contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0),
+          titlePadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+        );
+      },
+    );
+    
+    if (enteredEmail != null) {
+      print('🍎 [AUTH_BLOC] User entered email: $enteredEmail');
+      email = enteredEmail;
+      
+      // Now check if user exists with this email
+      final result = await fetchUserUseCase(email: enteredEmail);
+      result.fold((l) {
+        print('🍎 [AUTH_BLOC] FetchUserUseCase failed: $l');
+        print('🍎 [AUTH_BLOC] User not found in database, proceeding to signup...');
+        _navigateToSignUpForNewUser(context);
+      }, (user) {
+        print('🍎 [AUTH_BLOC] FetchUserUseCase result: $user');
+        if (user != null) {
+          print('🍎 [AUTH_BLOC] Existing user found, navigating to sign up...');
+          _navigateToSignUp(context, user: user);
+        } else {
+          print('🍎 [AUTH_BLOC] User is null, proceeding to signup...');
+          _navigateToSignUpForNewUser(context);
+        }
+      });
+    }
+  }
+
   Future<void> _navigateToSignUp(context, {required UserModel user}) async {
     bool isNewUser = user.onboardStatus == OnboardStatus.authenticated;
     final tempUser = TempUserModel(
@@ -261,23 +458,70 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
 
   FutureOr<void> authenticateWithAppleEvent(
       AuthenticateWithAppleEvent event, Emitter<AuthPageState> emit) async {
+    print('🍎 [AUTH_BLOC] Apple Sign-In event received');
     emit(AuthenticatingWithAppleState());
+    
     try {
+      print('🍎 [AUTH_BLOC] Calling auth.signInWithApple()...');
       AuthResponse appleAuth = await auth.signInWithApple();
+      print('🍎 [AUTH_BLOC] Apple Sign-In response received');
+      print('🍎 [AUTH_BLOC] User: ${appleAuth.user != null ? "Present" : "Null"}');
+      print('🍎 [AUTH_BLOC] Session: ${appleAuth.session != null ? "Present" : "Null"}');
+      
       if (appleAuth.user != null) {
+        print('🍎 [AUTH_BLOC] Apple user found');
+        print('🍎 [AUTH_BLOC] User ID: ${appleAuth.user!.id}');
+        print('🍎 [AUTH_BLOC] User Email: ${appleAuth.user!.email ?? "Not provided"}');
+        print('🍎 [AUTH_BLOC] User Phone: ${appleAuth.user!.phone ?? "Not provided"}');
+        print('🍎 [AUTH_BLOC] User Metadata: ${appleAuth.user!.userMetadata}');
+        
         email = appleAuth.user!.email;
-        final result = await fetchUserUseCase(email: appleAuth.user!.email);
-        result.fold((l) {}, (user) {
-          if (user != null) {
-            _navigateToSignUp(event.context, user: user);
-          }
-        });
+        print('🍎 [AUTH_BLOC] Set email variable to: $email');
+        
+        if (email != null && email!.isNotEmpty) {
+          print('🍎 [AUTH_BLOC] Fetching user from database with email: $email');
+          final result = await fetchUserUseCase(email: appleAuth.user!.email);
+          result.fold((l) {
+            print('🍎 [AUTH_BLOC] FetchUserUseCase failed: $l');
+            print('🍎 [AUTH_BLOC] User not found in database, proceeding to signup...');
+            _navigateToSignUpForNewUser(event.context);
+          }, (user) {
+            print('🍎 [AUTH_BLOC] FetchUserUseCase result: $user');
+            if (user != null) {
+              print('🍎 [AUTH_BLOC] Existing user found, navigating to sign up...');
+              _navigateToSignUp(event.context, user: user);
+            } else {
+              print('🍎 [AUTH_BLOC] User is null, proceeding to signup...');
+              _navigateToSignUpForNewUser(event.context);
+            }
+          });
+        } else {
+          print('🍎 [AUTH_BLOC] No email provided by Apple (Hide My Email), showing email dialog...');
+          await _showAppleEmailDialog(event.context);
+        }
+      } else {
+        print('🍎 [AUTH_BLOC] Apple user is null, authentication may have failed');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('🍎 [AUTH_BLOC] ERROR during Apple Sign-In: $e');
+      print('🍎 [AUTH_BLOC] Error type: ${e.runtimeType}');
+      print('🍎 [AUTH_BLOC] Stack trace: $stackTrace');
+      
       if (kDebugMode) {
         print("Error during Apple Sign-In: $e");
       }
+      
+      // Show user-friendly error message
+      ToastManager(
+        Toast(
+          title: 'Apple Sign-In Failed',
+          description: 'Unable to sign in with Apple. Please try again or use another method.',
+          type: ToastificationType.error,
+        ),
+      ).show(event.context);
     }
+    
+    print('🍎 [AUTH_BLOC] Apple Sign-In process completed');
     emit(AuthenticationCompleteWithAppleState());
   }
 
