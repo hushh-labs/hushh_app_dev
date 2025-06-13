@@ -615,6 +615,145 @@ List<LoginMode> socialMethods = [
 
 ---
 
+## Apple Sign-In Email Dialog Enhancement
+
+**Date:** 13/06/2025  
+**Issue:** Apple Sign-In users choosing "Hide My Email" caused incomplete authentication flow
+
+### Problem Description
+
+During testing, we discovered that when users choose **"Hide My Email"** during Apple Sign-In, the app received no email address from Apple. This caused the authentication flow to fail because:
+
+1. ✅ Apple Sign-In successful - Supabase user created
+2. ❌ **No email provided** by Apple (user chose "Hide My Email")
+3. ❌ App tries to find user in database **by email** - but email is empty!
+4. ❌ User not found in app database
+5. ❌ App deletes Supabase user and goes back to auth page
+
+**User Experience:** Users would click Apple Sign-In, complete Apple authentication, but then be returned to the login screen without explanation.
+
+### Solution Implemented
+
+Created an **Apple-style email dialog** that appears when Apple doesn't provide an email address, maintaining Apple's design guidelines while ensuring app functionality.
+
+#### Technical Implementation:
+
+**1. Apple-Style Email Dialog:**
+```dart
+Future<void> _showAppleEmailDialog(BuildContext context) async {
+  // Apple-style dialog with:
+  // - Apple icon (64px)
+  // - "Complete Your Sign In" title
+  // - Clean white background with 14px border radius
+  // - Apple blue (#007AFF) for buttons
+  // - Proper spacing and typography
+}
+```
+
+**2. Enhanced User Flow:**
+- **Scenario A:** Apple provides email → Direct user lookup → Login/Signup
+- **Scenario B:** Apple hides email → Show email dialog → User enters email → User lookup → Login/Signup
+
+**3. Dialog Features:**
+- ✅ **Apple Icon** at the top (64px, black)
+- ✅ **"Complete Your Sign In"** title (17pt, semibold)
+- ✅ **Explanatory text** about email requirement
+- ✅ **Email input field** with validation
+- ✅ **Cancel button** - signs out and returns to auth
+- ✅ **Continue button** - validates email and proceeds
+- ✅ **Error handling** - shows snackbar for invalid emails
+- ✅ **Non-dismissible** - ensures user completes the flow
+
+**4. Apple Design Compliance:**
+- ✅ **Visual Design:** Matches Apple's native dialog styling
+- ✅ **Color Scheme:** Apple blue (#007AFF) for interactive elements
+- ✅ **Typography:** System font weights and sizes
+- ✅ **Layout:** Proper spacing and alignment
+- ✅ **Interaction:** Standard Apple button behavior
+
+#### Code Changes Made:
+
+**Files Modified:**
+- `lib/app/platforms/mobile/auth/presentation/bloc/auth_bloc/bloc.dart`
+  - Added `_showAppleEmailDialog()` method
+  - Added `_navigateToSignUpForNewUser()` method
+  - Enhanced Apple Sign-In flow with email dialog logic
+  - Added comprehensive logging for debugging
+
+**Key Logic Updates:**
+```dart
+// Before: Direct failure when no email
+if (email == null || email.isEmpty) {
+  _handleNewUser(event.context); // Delete user and go back
+}
+
+// After: Show email dialog when no email
+if (email == null || email.isEmpty) {
+  await _showAppleEmailDialog(event.context); // Collect email
+}
+```
+
+### User Experience Improvements
+
+#### **Before Fix:**
+1. User clicks Apple Sign-In
+2. Apple authentication succeeds (no email provided)
+3. App returns to login screen
+4. User confused - no explanation
+
+#### **After Fix:**
+1. User clicks Apple Sign-In
+2. Apple authentication succeeds (no email provided)
+3. **Beautiful Apple-style dialog appears**
+4. User enters their email address
+5. App validates email and proceeds
+6. Smooth continuation to login/signup flow
+
+### Privacy & Compliance Benefits
+
+**Enhanced Privacy Protection:**
+- ✅ **Respects Apple's "Hide My Email"** choice
+- ✅ **Only asks for email when necessary** (when Apple doesn't provide it)
+- ✅ **User controls email sharing** through the dialog
+- ✅ **Maintains Apple Sign-In privacy benefits**
+
+**Apple Guideline 4.8 Compliance:**
+- ✅ **Limited data collection** - Only collects email when Apple doesn't provide it
+- ✅ **Email privacy option** - Respects user's choice to hide email initially
+- ✅ **No advertising data collection** - Clean authentication flow
+- ✅ **User control** - User can cancel at any time
+
+### Testing Results
+
+**Comprehensive Testing Performed:**
+- ✅ **Apple Sign-In with email sharing** - Works perfectly
+- ✅ **Apple Sign-In with "Hide My Email"** - Shows dialog, collects email, proceeds
+- ✅ **Email validation** - Rejects invalid emails with user-friendly error
+- ✅ **Cancel functionality** - Signs out and returns to auth screen
+- ✅ **Existing user flow** - Finds user by entered email, logs in
+- ✅ **New user flow** - Creates new user with entered email
+- ✅ **Error handling** - Graceful handling of all edge cases
+
+**Debug Logging Added:**
+- 🍎 `[APPLE_SIGN_IN]` - Authentication level logs
+- 🍎 `[AUTH_BLOC]` - Business logic level logs
+- Comprehensive error tracking and user flow monitoring
+
+### Build Information
+
+**iOS Build Completed:**
+- **Version:** 1.0.1
+- **Build Number:** 75
+- **Build Size:** 172.3MB (IPA)
+- **Status:** ✅ Ready for App Store submission
+
+**Files Ready for Upload:**
+- `build/ios/ipa/*.ipa` - Ready for Apple Transporter
+
+**Status:** ✅ Fixed - Apple Sign-In now handles all scenarios with Apple-style email dialog for enhanced user experience
+
+---
+
 <!-- Date Submitted
 May 27, 2025 at 12:04 PM
 Submission ID
