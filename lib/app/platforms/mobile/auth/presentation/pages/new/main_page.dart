@@ -35,6 +35,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
     super.initState();
     sl<AuthPageBloc>().add(const InitializeEvent(true));
     // Enable Apple Sign-In for App Store compliance (Guideline 4.8)
+    // Now enabled for both user and agent flows after Supabase configuration
     if (Platform.isIOS) {
       socialMethods.insert(1, LoginMode.apple);  // Insert after phone, before Google
     }
