@@ -97,15 +97,15 @@ class _AuthPageState extends State<AuthPage> {
             const PhoneNumberTextField(),
             const Spacer(),
             const SignInWithPhoneButton(),
-            // SizedBox(height: 16),
-            // const OrSeparatorWidget(),
-            // SizedBox(height: 16),
-            // Row(
-            //   children: [
-            //     if (Platform.isIOS) const SignInWithAppleButton(),
-            //     const SignInWithGoogleButton(),
-            //   ],
-            // )
+            SizedBox(height: 16),
+            const OrSeparatorWidget(),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                if (Platform.isIOS) const SignInWithAppleButton(),
+                const SignInWithGoogleButton(),
+              ],
+            )
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+// app/shared/core/backend_controller/auth_controller/auth_controller_impl.dart
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -13,6 +14,9 @@ import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hushh_app/app/platforms/mobile/auth/domain/entities/temp_user.dart';
+import 'package:hushh_app/app/shared/core/utils/toast_manager.dart';
+import 'package:toastification/toastification.dart';
 
 part 'auth_controller.dart';
 
@@ -55,9 +59,9 @@ class AuthControllerImpl extends AuthController {
   }
 
   @override
-  Future<AuthResponse> signInWithApple() async {
+  Future<AuthResponse> signInWithApple(BuildContext context) async {
     print('🍎 [APPLE_SIGN_IN] Starting Apple Sign-In process...');
-    
+
     try {
       print('🍎 [APPLE_SIGN_IN] Generating nonce...');
       final rawNonce = supabase.auth.generateRawNonce();
@@ -77,9 +81,32 @@ class AuthControllerImpl extends AuthController {
       print('🍎 [APPLE_SIGN_IN] Apple ID credential received successfully');
       print('🍎 [APPLE_SIGN_IN] User ID: ${credential.userIdentifier}');
       print('🍎 [APPLE_SIGN_IN] Email: ${credential.email ?? "Not provided"}');
-      print('🍎 [APPLE_SIGN_IN] Full Name: ${credential.givenName ?? "Not provided"} ${credential.familyName ?? "Not provided"}');
-      print('🍎 [APPLE_SIGN_IN] Authorization Code: ${credential.authorizationCode != null ? "Present" : "Null"}');
-      print('🍎 [APPLE_SIGN_IN] Identity Token: ${credential.identityToken != null ? "Present" : "Null"}');
+      print(
+          '🍎 [APPLE_SIGN_IN] Full Name: ${credential.givenName ?? "Not provided"} ${credential.familyName ?? "Not provided"}');
+      print(
+          '🍎 [APPLE_SIGN_IN] Authorization Code: ${credential.authorizationCode != null ? "Present" : "Null"}');
+      print(
+          '🍎 [APPLE_SIGN_IN] Identity Token: ${credential.identityToken != null ? "Present" : "Null"}');
+
+      // Note: Apple doesn't provide email/name on subsequent logins
+      // This is expected behavior and handled by the Apple-style dialog
+
+      // Store Apple credentials in TempUserModel and AppLocalStorage
+      final String? fullName =
+          (credential.givenName != null || credential.familyName != null)
+              ? [credential.givenName, credential.familyName]
+                  .where((e) => e != null && e.isNotEmpty)
+                  .join(' ')
+              : null;
+      final tempUser = TempUserModel(
+        avatar: null,
+        name: fullName,
+        countryCode: null,
+        phoneNumber: null,
+        email: credential.email,
+        isAppleSignIn: true,
+      );
+      AppLocalStorage.updateTempUser(tempUser);
 
       final idToken = credential.identityToken;
       if (idToken == null) {
@@ -87,29 +114,30 @@ class AuthControllerImpl extends AuthController {
         throw const AuthException(
             'Could not find ID Token from generated credential.');
       }
-      
+
       print('🍎 [APPLE_SIGN_IN] ID Token found, length: ${idToken.length}');
       print('🍎 [APPLE_SIGN_IN] Signing in with Supabase...');
-      
+
       final result = await supabase.auth.signInWithIdToken(
         provider: OAuthProvider.apple,
         idToken: idToken,
         nonce: rawNonce,
       );
-      
+
       print('🍎 [APPLE_SIGN_IN] Supabase sign-in successful!');
       print('🍎 [APPLE_SIGN_IN] User ID: ${result.user?.id}');
       print('🍎 [APPLE_SIGN_IN] User Email: ${result.user?.email}');
-      print('🍎 [APPLE_SIGN_IN] Session: ${result.session?.accessToken != null ? "Present" : "Null"}');
-      
+      print(
+          '🍎 [APPLE_SIGN_IN] Session: ${result.session?.accessToken != null ? "Present" : "Null"}');
+
       return result;
-      
     } catch (e) {
       print('🍎 [APPLE_SIGN_IN] ERROR: $e');
       print('🍎 [APPLE_SIGN_IN] Error type: ${e.runtimeType}');
       if (e is SignInWithAppleException) {
         print('🍎 [APPLE_SIGN_IN] Apple Sign-In Exception: $e');
-        print('🍎 [APPLE_SIGN_IN] Apple Sign-In Exception Details: ${e.toString()}');
+        print(
+            '🍎 [APPLE_SIGN_IN] Apple Sign-In Exception Details: ${e.toString()}');
       }
       rethrow;
     }
@@ -131,8 +159,9 @@ class AuthControllerImpl extends AuthController {
     print('📱 [AUTH_CONTROLLER] OTP: $otp');
     print('📱 [AUTH_CONTROLLER] Phone: $phoneNumber');
     print('📱 [AUTH_CONTROLLER] isPhoneChange: $isPhoneChange');
-    print('📱 [AUTH_CONTROLLER] OTP Type: ${isPhoneChange ? OtpType.phoneChange : OtpType.sms}');
-    
+    print(
+        '📱 [AUTH_CONTROLLER] OTP Type: ${isPhoneChange ? OtpType.phoneChange : OtpType.sms}');
+
     try {
       print('📱 [AUTH_CONTROLLER] Calling Supabase verifyOTP...');
       final result = await supabase.auth.verifyOTP(
@@ -141,7 +170,8 @@ class AuthControllerImpl extends AuthController {
           phone: phoneNumber);
       print('📱 [AUTH_CONTROLLER] Supabase verifyOTP successful!');
       print('📱 [AUTH_CONTROLLER] User ID: ${result.user?.id}');
-      print('📱 [AUTH_CONTROLLER] Session: ${result.session?.accessToken != null ? "Present" : "Null"}');
+      print(
+          '📱 [AUTH_CONTROLLER] Session: ${result.session?.accessToken != null ? "Present" : "Null"}');
       return result;
     } catch (e) {
       print('📱 [AUTH_CONTROLLER] Supabase verifyOTP failed: $e');
@@ -214,7 +244,8 @@ class AuthControllerImpl extends AuthController {
 
   @override
   Future<void> deleteUser() async {
-    print('📱 [AUTH_CONTROLLER] Deleting user from Supabase database using RPC...');
+    print(
+        '📱 [AUTH_CONTROLLER] Deleting user from Supabase database using RPC...');
     try {
       final currentUser = supabase.auth.currentUser;
       if (currentUser == null) {
@@ -222,20 +253,20 @@ class AuthControllerImpl extends AuthController {
         await supabase.auth.signOut();
         return;
       }
-      
+
       print('📱 [AUTH_CONTROLLER] Current user ID: ${currentUser.id}');
-      
+
       // Use the same RPC function as in settings to delete user account
-      final response = await supabase.rpc('delete_user_account',
-          params: {'p_user_id': currentUser.id});
-      
+      final response = await supabase
+          .rpc('delete_user_account', params: {'p_user_id': currentUser.id});
+
       print('📱 [AUTH_CONTROLLER] RPC delete_user_account response: $response');
-      print('📱 [AUTH_CONTROLLER] User deleted successfully from Supabase database using RPC');
-      
+      print(
+          '📱 [AUTH_CONTROLLER] User deleted successfully from Supabase database using RPC');
+
       // Sign out after successful deletion
       await supabase.auth.signOut();
       print('📱 [AUTH_CONTROLLER] User signed out after deletion');
-      
     } catch (e) {
       print('📱 [AUTH_CONTROLLER] Error deleting user from database: $e');
       // If RPC delete fails, try regular signOut

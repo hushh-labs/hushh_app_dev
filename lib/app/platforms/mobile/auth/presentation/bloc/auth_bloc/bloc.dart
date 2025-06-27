@@ -31,6 +31,7 @@ import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:hushh_app/app/shared/core/utils/toast_manager.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:page_transition/page_transition.dart';
+import 'dart:ui';
 
 // import 'package:sms_autofill/sms_autofill.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -118,18 +119,20 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
   bool get isUser => sl<HomePageBloc>().entity == Entity.user;
 
   Future<void> _handleNewUser(BuildContext context) async {
-    print('🚀 [AUTH_BLOC] Handling new user - user authenticated in Supabase but not in app database');
-    print('🚀 [AUTH_BLOC] Deleting user completely from Supabase database for fresh signup...');
-    
+    print(
+        '🚀 [AUTH_BLOC] Handling new user - user authenticated in Supabase but not in app database');
+    print(
+        '🚀 [AUTH_BLOC] Deleting user completely from Supabase database for fresh signup...');
+
     try {
       // Delete the user completely from Supabase database
       await auth.deleteUser();
-      print('🚀 [AUTH_BLOC] User deleted completely from Supabase database successfully');
-      
+      print(
+          '🚀 [AUTH_BLOC] User deleted completely from Supabase database successfully');
+
       // Navigate back to auth page to start fresh signup process
       print('🚀 [AUTH_BLOC] Navigating back to auth page for fresh signup...');
       Navigator.of(context).popUntil((route) => route.isFirst);
-      
     } catch (e) {
       print('🚀 [AUTH_BLOC] Error deleting user: $e');
       // Even if delete fails, navigate back to start fresh
@@ -139,19 +142,20 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
 
   Future<void> _navigateToSignUpForNewUser(BuildContext context) async {
     print('🍎 [AUTH_BLOC] Navigating to signup for new Apple user...');
-    
+
     // Create temp user for Apple Sign-In without email
     final tempUser = TempUserModel(
         avatar: null,
         countryCode: selectedCountry?.dialCode,
         name: null,
         phoneNumber: null,
-        email: null);
+        email: null,
+        isAppleSignIn: true);
     AppLocalStorage.updateTempUser(tempUser);
-    
+
     sl<SignUpPageBloc>().add(SignUpInitializeEvent());
     AppLocalStorage.updateUserOnboardingStatus(UserOnboardStatus.signUpForm);
-    
+
     if (sl<HomePageBloc>().entity == Entity.user) {
       Navigator.push(
           context,
@@ -166,172 +170,259 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
 
   Future<void> _showAppleEmailDialog(BuildContext context) async {
     print('🍎 [AUTH_BLOC] Showing Apple-style email dialog...');
-    
+
     final TextEditingController emailController = TextEditingController();
     String? enteredEmail;
-    
-    await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          title: Column(
-            children: [
-              Icon(
-                Icons.apple,
-                size: 64,
-                color: Colors.black,
+
+    try {
+      final result = await showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: AlertDialog(
+              backgroundColor: Colors.white.withOpacity(0.95),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              SizedBox(height: 16),
-              Text(
-                'Complete Your Sign In',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'To complete your Apple Sign-In, please provide your email address.',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: 'Enter your email',
-                  hintStyle: TextStyle(
-                    color: Colors.black.withOpacity(0.5),
-                    fontSize: 16,
+              elevation: 20,
+              shadowColor: Colors.black.withOpacity(0.3),
+              title: Column(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
+                      Icons.apple,
+                      size: 50,
+                      color: Colors.white,
+                    ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  SizedBox(height: 20),
+                  Text(
+                    'Complete Your Sign In',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                      letterSpacing: -0.5,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Color(0xFF007AFF), width: 2),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
+                ],
               ),
-            ],
-          ),
-          actions: [
-            Column(
-              children: [
-                Divider(height: 1, color: Colors.grey.shade300),
-                Row(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Apple didn\'t provide your email address. Please enter your email to complete the sign-in process.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black.withOpacity(0.7),
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 24),
+                    child: TextField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your email address',
+                        hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.4),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Color(0xFF007AFF), width: 2),
+                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      ),
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                Column(
                   children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          // Sign out and go back to auth
-                          auth.signOut();
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        ),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 17,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 44,
-                      color: Colors.grey.shade300,
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          final emailText = emailController.text.trim();
-                          if (emailText.isNotEmpty && emailText.contains('@')) {
-                            enteredEmail = emailText;
-                            Navigator.of(context).pop(emailText);
-                          } else {
-                            // Show error
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Please enter a valid email address'),
-                                backgroundColor: Colors.red,
+                    Divider(height: 1, color: Colors.grey.shade300),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () async {
+                              print(
+                                  '🍎 [AUTH_BLOC] User cancelled email dialog');
+                              Navigator.of(context).pop();
+                              // Sign out and go back to auth
+                              try {
+                                await auth.signOut();
+                                print(
+                                    '🍎 [AUTH_BLOC] Successfully signed out after cancellation');
+                              } catch (e) {
+                                print('🍎 [AUTH_BLOC] Error signing out: $e');
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: Color(0xFF007AFF),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w400,
                               ),
-                            );
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        ),
-                        child: Text(
-                          'Continue',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
+                        Container(
+                          width: 1,
+                          height: 44,
+                          color: Colors.grey.shade300,
+                        ),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              final emailText = emailController.text.trim();
+                              if (_isValidEmail(emailText)) {
+                                enteredEmail = emailText;
+                                Navigator.of(context).pop(emailText);
+                              } else {
+                                // Show error
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Please enter a valid email address'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero),
+                            ),
+                            child: Text(
+                              'Continue',
+                              style: TextStyle(
+                                color: Color(0xFF007AFF),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
+              actionsPadding: EdgeInsets.zero,
+              contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0),
+              titlePadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
             ),
-          ],
-          actionsPadding: EdgeInsets.zero,
-          contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0),
-          titlePadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-        );
-      },
-    );
-    
-    if (enteredEmail != null) {
+          );
+        },
+      );
+
+      if (result != null && result.isNotEmpty) {
+        enteredEmail = result;
+      }
+    } catch (e) {
+      print('🍎 [AUTH_BLOC] Error showing Apple email dialog: $e');
+      // Fallback: sign out and return to auth
+      try {
+        await auth.signOut();
+      } catch (signOutError) {
+        print(
+            '🍎 [AUTH_BLOC] Error signing out after dialog error: $signOutError');
+      }
+      return;
+    }
+
+    // Clean up controller
+    emailController.dispose();
+
+    if (enteredEmail != null && enteredEmail!.isNotEmpty) {
       print('🍎 [AUTH_BLOC] User entered email: $enteredEmail');
       email = enteredEmail;
-      
-      // Now check if user exists with this email
-      final result = await fetchUserUseCase(email: enteredEmail);
-      result.fold((l) {
-        print('🍎 [AUTH_BLOC] FetchUserUseCase failed: $l');
-        print('🍎 [AUTH_BLOC] User not found in database, proceeding to signup...');
-        _navigateToSignUpForNewUser(context);
-      }, (user) {
-        print('🍎 [AUTH_BLOC] FetchUserUseCase result: $user');
-        if (user != null) {
-          print('🍎 [AUTH_BLOC] Existing user found, navigating to sign up...');
-          _navigateToSignUp(context, user: user);
-        } else {
-          print('🍎 [AUTH_BLOC] User is null, proceeding to signup...');
+
+      try {
+        // Now check if user exists with this email
+        final result = await fetchUserUseCase(email: enteredEmail);
+        result.fold((l) {
+          print('🍎 [AUTH_BLOC] FetchUserUseCase failed: $l');
+          print(
+              '🍎 [AUTH_BLOC] User not found in database, proceeding to signup...');
           _navigateToSignUpForNewUser(context);
-        }
-      });
+        }, (user) {
+          print('🍎 [AUTH_BLOC] FetchUserUseCase result: $user');
+          if (user != null) {
+            print(
+                '🍎 [AUTH_BLOC] Existing user found, navigating to sign up...');
+            _navigateToSignUp(context, user: user);
+          } else {
+            print('🍎 [AUTH_BLOC] User is null, proceeding to signup...');
+            _navigateToSignUpForNewUser(context);
+          }
+        });
+      } catch (e) {
+        print('🍎 [AUTH_BLOC] Error fetching user with entered email: $e');
+        // Fallback: proceed to signup
+        _navigateToSignUpForNewUser(context);
+      }
+    } else {
+      print('🍎 [AUTH_BLOC] No email entered or dialog cancelled');
+      // User cancelled or didn't enter email, sign out and return to auth
+      try {
+        await auth.signOut();
+        print('🍎 [AUTH_BLOC] Successfully signed out after no email provided');
+      } catch (e) {
+        print('🍎 [AUTH_BLOC] Error signing out after no email: $e');
+      }
     }
+  }
+
+  // Helper method to validate email format
+  bool _isValidEmail(String email) {
+    if (email.isEmpty) return false;
+
+    // Basic email validation regex
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return emailRegex.hasMatch(email);
   }
 
   Future<void> _navigateToSignUp(context, {required UserModel user}) async {
@@ -460,35 +551,42 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
       AuthenticateWithAppleEvent event, Emitter<AuthPageState> emit) async {
     print('🍎 [AUTH_BLOC] Apple Sign-In event received');
     emit(AuthenticatingWithAppleState());
-    
+
     try {
       print('🍎 [AUTH_BLOC] Calling auth.signInWithApple()...');
-      AuthResponse appleAuth = await auth.signInWithApple();
+      AuthResponse appleAuth = await auth.signInWithApple(event.context);
       print('🍎 [AUTH_BLOC] Apple Sign-In response received');
-      print('🍎 [AUTH_BLOC] User: ${appleAuth.user != null ? "Present" : "Null"}');
-      print('🍎 [AUTH_BLOC] Session: ${appleAuth.session != null ? "Present" : "Null"}');
-      
+      print(
+          '🍎 [AUTH_BLOC] User: ${appleAuth.user != null ? "Present" : "Null"}');
+      print(
+          '🍎 [AUTH_BLOC] Session: ${appleAuth.session != null ? "Present" : "Null"}');
+
       if (appleAuth.user != null) {
         print('🍎 [AUTH_BLOC] Apple user found');
         print('🍎 [AUTH_BLOC] User ID: ${appleAuth.user!.id}');
-        print('🍎 [AUTH_BLOC] User Email: ${appleAuth.user!.email ?? "Not provided"}');
-        print('🍎 [AUTH_BLOC] User Phone: ${appleAuth.user!.phone ?? "Not provided"}');
+        print(
+            '🍎 [AUTH_BLOC] User Email: ${appleAuth.user!.email ?? "Not provided"}');
+        print(
+            '🍎 [AUTH_BLOC] User Phone: ${appleAuth.user!.phone ?? "Not provided"}');
         print('🍎 [AUTH_BLOC] User Metadata: ${appleAuth.user!.userMetadata}');
-        
+
         email = appleAuth.user!.email;
         print('🍎 [AUTH_BLOC] Set email variable to: $email');
-        
+
         if (email != null && email!.isNotEmpty) {
-          print('🍎 [AUTH_BLOC] Fetching user from database with email: $email');
+          print(
+              '🍎 [AUTH_BLOC] Fetching user from database with email: $email');
           final result = await fetchUserUseCase(email: appleAuth.user!.email);
           result.fold((l) {
             print('🍎 [AUTH_BLOC] FetchUserUseCase failed: $l');
-            print('🍎 [AUTH_BLOC] User not found in database, proceeding to signup...');
+            print(
+                '🍎 [AUTH_BLOC] User not found in database, proceeding to signup...');
             _navigateToSignUpForNewUser(event.context);
           }, (user) {
             print('🍎 [AUTH_BLOC] FetchUserUseCase result: $user');
             if (user != null) {
-              print('🍎 [AUTH_BLOC] Existing user found, navigating to sign up...');
+              print(
+                  '🍎 [AUTH_BLOC] Existing user found, navigating to sign up...');
               _navigateToSignUp(event.context, user: user);
             } else {
               print('🍎 [AUTH_BLOC] User is null, proceeding to signup...');
@@ -496,31 +594,38 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
             }
           });
         } else {
-          print('🍎 [AUTH_BLOC] No email provided by Apple (Hide My Email), showing email dialog...');
+          print(
+              '🍎 [AUTH_BLOC] No email provided by Apple (Hide My Email), showing email dialog...');
           await _showAppleEmailDialog(event.context);
         }
       } else {
-        print('🍎 [AUTH_BLOC] Apple user is null, authentication may have failed');
+        print(
+            '🍎 [AUTH_BLOC] Apple user is null, authentication may have failed');
+        // Show user-friendly error message
+        ToastManager(
+          Toast(
+            title: 'Apple Sign-In Failed',
+            description: 'Unable to complete Apple Sign-In. Please try again.',
+            type: ToastificationType.error,
+          ),
+        ).show(event.context);
       }
     } catch (e, stackTrace) {
       print('🍎 [AUTH_BLOC] ERROR during Apple Sign-In: $e');
       print('🍎 [AUTH_BLOC] Error type: ${e.runtimeType}');
       print('🍎 [AUTH_BLOC] Stack trace: $stackTrace');
-      
-      if (kDebugMode) {
-        print("Error during Apple Sign-In: $e");
-      }
-      
+
       // Show user-friendly error message
       ToastManager(
         Toast(
           title: 'Apple Sign-In Failed',
-          description: 'Unable to sign in with Apple. Please try again or use another method.',
+          description:
+              'Unable to sign in with Apple. Please try again or use another method.',
           type: ToastificationType.error,
         ),
       ).show(event.context);
     }
-    
+
     print('🍎 [AUTH_BLOC] Apple Sign-In process completed');
     emit(AuthenticationCompleteWithAppleState());
   }
@@ -718,19 +823,22 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
     print('🚀 [AUTH_BLOC] Verification type: ${event.type}');
     print('🚀 [AUTH_BLOC] Phone number: $phoneNumber');
     print('🚀 [AUTH_BLOC] OnVerify callback: ${event.onVerify}');
-    
+
     if (event.value.length == Constants.otpLength) {
-      print('🚀 [AUTH_BLOC] OTP length is valid, proceeding with verification...');
+      print(
+          '🚀 [AUTH_BLOC] OTP length is valid, proceeding with verification...');
       emit(PhoneVerifyingState());
       try {
         AuthResponse authRes;
         if (event.type == OtpVerificationType.phone) {
           print('🚀 [AUTH_BLOC] Verifying phone OTP...');
           try {
-            print('🚀 [AUTH_BLOC] Calling auth.verifyPhone with OTP: ${event.value}, Phone: $phoneNumber');
+            print(
+                '🚀 [AUTH_BLOC] Calling auth.verifyPhone with OTP: ${event.value}, Phone: $phoneNumber');
             authRes = await auth.verifyPhone(
                 event.value, phoneNumber, event.onVerify != null);
-            print('🚀 [AUTH_BLOC] Phone verification successful! User: ${authRes.user?.id}');
+            print(
+                '🚀 [AUTH_BLOC] Phone verification successful! User: ${authRes.user?.id}');
           } catch (err) {
             print('🚀 [AUTH_BLOC] Phone verification failed: $err');
             ToastManager(
@@ -755,12 +863,14 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
         // await auth.verifyPhoneFirebase(
         //     firebaseVerificationId!, event.value); //firebase
         if (authRes.user != null) {
-          print('🚀 [AUTH_BLOC] AuthRes user is not null, proceeding with navigation logic...');
+          print(
+              '🚀 [AUTH_BLOC] AuthRes user is not null, proceeding with navigation logic...');
           // supabase
           // if (auth.firebaseCurrentUser != null) { // firebase
           if (event.onVerify == null) {
             print('🚀 [AUTH_BLOC] OnVerify is null, fetching user data...');
-            print('🚀 [AUTH_BLOC] Phone number without code: $phoneNumberWithoutCode');
+            print(
+                '🚀 [AUTH_BLOC] Phone number without code: $phoneNumberWithoutCode');
             final result =
                 await fetchUserUseCase(phoneNumber: phoneNumberWithoutCode);
             result.fold((l) {
@@ -791,7 +901,8 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
         return;
       }
     } else {
-      print('🚀 [AUTH_BLOC] OTP length is insufficient: ${event.value.length}/${Constants.otpLength}');
+      print(
+          '🚀 [AUTH_BLOC] OTP length is insufficient: ${event.value.length}/${Constants.otpLength}');
       print('🚀 [AUTH_BLOC] Not proceeding with verification');
     }
     emit(PhoneVerifiedState());

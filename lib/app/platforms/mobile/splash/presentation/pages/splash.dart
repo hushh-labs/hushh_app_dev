@@ -1,3 +1,4 @@
+// app/platforms/mobile/splash/presentation/pages/splash.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,6 @@ import 'package:hushh_app/app/shared/config/routes/routes.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:hushh_app/app/shared/core/utils/notification_service.dart';
-import 'package:hushh_app/widgets/tracking_permission_dialog.dart';
 import 'package:hushh_app/services/tracking_service.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -42,11 +42,11 @@ class _SplashPageState extends State<SplashPage> {
       // if(amICompromised) {
       //
       // } else if()
-      if(AppLocalStorage.isUserInActive) {
+      if (AppLocalStorage.isUserInActive) {
         sl<SettingsPageBloc>().add(LogoutEvent(context));
         return;
       } else {
-        if(AppLocalStorage.isUserLoggedIn) {
+        if (AppLocalStorage.isUserLoggedIn) {
           await AppLocalStorage.setUserActiveState();
         }
       }
@@ -56,7 +56,6 @@ class _SplashPageState extends State<SplashPage> {
         sl<CardWalletPageBloc>().getInstalledCards();
         sl<SplashPageBloc>().add(UpdateUserRegistrationTokenEvent(
             hushhId: Supabase.instance.client.auth.currentUser?.id));
-        await NotificationService().setupFcmListeners(context);
         // sl<ReceiptRadarUtils>().googleAuth(refresh: true).then((value) {
         //   if(value != null) {
         //     sl<ReceiptRadarBloc>().accessToken = value;
@@ -75,13 +74,14 @@ class _SplashPageState extends State<SplashPage> {
                 installedBrandCards: value.item1));
           });
         } else {
-          sl<AgentCardWalletPageBloc>().add(FetchAgentToUpdateLocalAgentEvent());
+          sl<AgentCardWalletPageBloc>()
+              .add(FetchAgentToUpdateLocalAgentEvent());
         }
-        if(AppLocalStorage.hushhId !=null)
-        sl<HomePageBloc>().getCurrentLocation().then((position) {
-          sl<SplashPageBloc>().add(InsertUserAgentNewLocationEvent(
-              position, AppLocalStorage.hushhId!));
-        });
+        if (AppLocalStorage.hushhId != null)
+          sl<HomePageBloc>().getCurrentLocation().then((position) {
+            sl<SplashPageBloc>().add(InsertUserAgentNewLocationEvent(
+                position, AppLocalStorage.hushhId!));
+          });
         sl<CardWalletPageBloc>().add(CardWalletInitializeEvent(context));
       }
     });
@@ -94,28 +94,15 @@ class _SplashPageState extends State<SplashPage> {
         // Check current tracking status
         final currentStatus = await TrackingService.getTrackingStatus();
         print('🔒 [TRACKING] Current tracking status: $currentStatus');
-        
+
         // Only show dialog if status is not determined
         if (currentStatus == TrackingStatus.notDetermined) {
-          print('🔒 [TRACKING] Showing tracking permission dialog...');
-          
-          // Show custom dialog first, then request system permission
-          if (mounted) {
-            await showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => TrackingPermissionDialog(
-                onAuthorized: () {
-                  print('🔒 [TRACKING] User authorized tracking');
-                },
-                onDenied: () {
-                  print('🔒 [TRACKING] User denied tracking');
-                },
-              ),
-            );
-          }
+          print('🔒 [TRACKING] Requesting system tracking permission...');
+          // Directly request system permission or skip dialog
+          await TrackingService.requestTrackingAuthorization();
         } else {
-          print('🔒 [TRACKING] Tracking permission already determined: $currentStatus');
+          print(
+              '🔒 [TRACKING] Tracking permission already determined: $currentStatus');
         }
       } catch (e) {
         print('🔒 [TRACKING] Error requesting tracking permission: $e');
@@ -158,14 +145,17 @@ class _SplashPageState extends State<SplashPage> {
                       }
                     }
                   } else {
-                    if(sl<HomePageBloc>().entity == Entity.user) {
-                      Navigator.pushReplacementNamed(context, AppRoutes.mainAuth);
+                    if (sl<HomePageBloc>().entity == Entity.user) {
+                      Navigator.pushReplacementNamed(
+                          context, AppRoutes.mainAuth);
                     } else {
-                      if(Supabase.instance.client.auth.currentUser != null) {
-                        Navigator.pushReplacementNamed(context, AppRoutes.agentHome,
-                          arguments: AgentHomePageArgs(tabValue: 1));
+                      if (Supabase.instance.client.auth.currentUser != null) {
+                        Navigator.pushReplacementNamed(
+                            context, AppRoutes.agentHome,
+                            arguments: AgentHomePageArgs(tabValue: 1));
                       } else {
-                        Navigator.pushReplacementNamed(context, AppRoutes.mainAuth);
+                        Navigator.pushReplacementNamed(
+                            context, AppRoutes.mainAuth);
                       }
                     }
                     // if(AppLocalStorage.isTutorialWatched) {

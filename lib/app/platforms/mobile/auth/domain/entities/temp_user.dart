@@ -27,12 +27,17 @@ class TempUserModel {
   @JsonKey(name: TempUserKeys.emailKey)
   final String? email;
 
+  @HiveField(6)
+  @JsonKey(name: TempUserKeys.isAppleSignInKey)
+  final bool? isAppleSignIn;
+
   TempUserModel({
     this.avatar,
     this.name,
     this.countryCode,
     this.phoneNumber,
     this.email,
+    this.isAppleSignIn,
   });
 
   factory TempUserModel.fromJson(Map<String, dynamic> json) =>

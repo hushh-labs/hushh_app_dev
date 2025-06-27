@@ -1,3 +1,4 @@
+// app/platforms/mobile/auth/presentation/pages/new/user_guide/user_guide_question_page.dart
 import 'dart:io';
 
 import 'package:animated_checkmark/animated_checkmark.dart';
@@ -20,6 +21,7 @@ import 'package:hushh_app/app/shared/core/components/custom_camera_page.dart';
 import 'package:hushh_app/app/shared/core/components/hushh_agent_button.dart';
 import 'package:hushh_app/app/shared/core/components/hushh_secondary_button.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
+import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:hushh_app/app/shared/core/utils/toast_manager.dart';
 import 'package:hushh_app/app/shared/core/utils/utils_impl.dart';
 import 'package:just_audio/just_audio.dart';
@@ -78,7 +80,7 @@ class _UserGuideQuestionPageState extends State<UserGuideQuestionPage> {
   String get title {
     switch (widget.question) {
       case UserGuideQuestionType.name:
-        return 'What’s your name?';
+        return "What's your name?";
       case UserGuideQuestionType.emailOrPhone:
         return sl<AuthPageBloc>().isPhoneLogin ? 'Enter Email' : 'Enter Number';
       case UserGuideQuestionType.multiChoiceQuestion:
@@ -91,6 +93,8 @@ class _UserGuideQuestionPageState extends State<UserGuideQuestionPage> {
             : 'What product categories you deal in?';
       case UserGuideQuestionType.record:
         return 'Record Video';
+      default:
+        return '';
     }
   }
 
@@ -145,12 +149,47 @@ class _UserGuideQuestionPageState extends State<UserGuideQuestionPage> {
 
   @override
   void initState() {
-    if(controller?.text.trim().isEmpty ?? false) {
+    if (controller?.text.trim().isEmpty ?? false) {
       controller?.clear();
     }
     if (sl<AgentSignUpPageBloc>().allCategorySections.isEmpty) {
       sl<AgentSignUpPageBloc>().add(FetchCategoriesEvent());
     }
+    
+    // Auto-skip logic for Apple Sign-In users
+    final tempUser = AppLocalStorage.tempUser;
+    final isAppleSignIn = tempUser?.isAppleSignIn == true;
+    
+    if (isAppleSignIn) {
+      // Auto-skip name step if Apple provided name
+      if (isName && tempUser?.name != null && tempUser!.name!.isNotEmpty) {
+        print('🍎 [USER_GUIDE] Auto-skipping name step - Apple provided: ${tempUser.name}');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          sl<SignUpPageBloc>().add(OnNextUserGuideClickedEvent(
+            isValidated: true,
+            question: widget.question,
+            context: context,
+          ));
+        });
+        super.initState();
+        return;
+      }
+      
+      // Auto-skip email step if Apple provided email
+      if (isEmail && tempUser?.email != null && tempUser!.email!.isNotEmpty) {
+        print('🍎 [USER_GUIDE] Auto-skipping email step - Apple provided: ${tempUser.email}');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          sl<SignUpPageBloc>().add(OnNextUserGuideClickedEvent(
+            isValidated: true,
+            question: widget.question,
+            context: context,
+          ));
+        });
+        super.initState();
+        return;
+      }
+    }
+    
     super.initState();
   }
 
@@ -206,9 +245,11 @@ class _UserGuideQuestionPageState extends State<UserGuideQuestionPage> {
                         style:
                             context.headlineSmall?.copyWith(letterSpacing: 0.4),
                         validator: (value) => validator(value),
-                        readOnly:
-                            widget.question == UserGuideQuestionType.record ||
-                                widget.question == UserGuideQuestionType.dob,
+                        readOnly: (widget.question ==
+                                UserGuideQuestionType.record ||
+                            widget.question == UserGuideQuestionType.dob ||
+                            (isName && controller?.text.isNotEmpty == true) ||
+                            (isEmail && controller?.text.isNotEmpty == true)),
                         controller: controller,
                         keyboardType: isPhoneNumber
                             ? TextInputType.number
@@ -218,11 +259,27 @@ class _UserGuideQuestionPageState extends State<UserGuideQuestionPage> {
                                     ? TextInputType.name
                                     : null,
                         decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintMaxLines: 2,
-                            hintStyle: context.headlineSmall?.copyWith(
-                                color: Colors.grey, letterSpacing: 0.4),
-                            hintText: hintText),
+                          border: InputBorder.none,
+                          hintMaxLines: 2,
+                          hintStyle: context.headlineSmall?.copyWith(
+                              color: Colors.grey, letterSpacing: 0.4),
+                          hintText: hintText,
+                          filled: (isName &&
+                                  controller?.text.isNotEmpty == true) ||
+                              (isEmail && controller?.text.isNotEmpty == true),
+                          fillColor: ((isName &&
+                                      controller?.text.isNotEmpty == true) ||
+                                  (isEmail &&
+                                      controller?.text.isNotEmpty == true))
+                              ? Colors.grey.shade200
+                              : null,
+                          suffixIcon: ((isName &&
+                                      controller?.text.isNotEmpty == true) ||
+                                  (isEmail &&
+                                      controller?.text.isNotEmpty == true))
+                              ? Icon(Icons.lock, color: Colors.grey)
+                              : null,
+                        ),
                       ),
                     ),
                   ),
@@ -569,8 +626,8 @@ class _MultiChoiceQuestionState extends State<MultiChoiceQuestion> {
                               color: Colors.white)
                         else
                           Text('${alphabets[index].toUpperCase()}.',
-                              style: context.titleMedium
-                                  ?.copyWith(color: Utils().getTextColor(color))),
+                              style: context.titleMedium?.copyWith(
+                                  color: Utils().getTextColor(color))),
                         const SizedBox(width: 10),
                         Text(
                           widget.questions[index],

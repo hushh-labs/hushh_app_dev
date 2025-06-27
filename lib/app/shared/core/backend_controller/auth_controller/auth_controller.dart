@@ -1,3 +1,4 @@
+// app/shared/core/backend_controller/auth_controller/auth_controller.dart
 part of 'auth_controller_impl.dart';
 
 abstract class AuthController {
@@ -7,15 +8,17 @@ abstract class AuthController {
 
   Future<AuthResponse> signInWithGoogle();
 
-  Future<AuthResponse> signInWithApple();
+  Future<AuthResponse> signInWithApple(BuildContext context);
 
   Future<void> signInWithPhone(String countryCode, String phoneNumber);
 
-  Future<AuthResponse> verifyPhone(String otp, String phoneNumber, [bool isPhoneChange = false]);
+  Future<AuthResponse> verifyPhone(String otp, String phoneNumber,
+      [bool isPhoneChange = false]);
 
   Future<ResendResponse> resendOtp(String phoneNumber);
 
-  Future<void> signInWithPhoneFirebase(String phoneNumber, BuildContext context);
+  Future<void> signInWithPhoneFirebase(
+      String phoneNumber, BuildContext context);
 
   Future<void> verifyPhoneFirebase(String verificationId, String otp);
 

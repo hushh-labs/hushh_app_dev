@@ -22,13 +22,14 @@ class TempUserModelAdapter extends TypeAdapter<TempUserModel> {
       countryCode: fields[3] as String?,
       phoneNumber: fields[4] as String?,
       email: fields[5] as String?,
+      isAppleSignIn: fields[6] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempUserModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(1)
       ..write(obj.avatar)
       ..writeByte(2)
@@ -38,7 +39,9 @@ class TempUserModelAdapter extends TypeAdapter<TempUserModel> {
       ..writeByte(4)
       ..write(obj.phoneNumber)
       ..writeByte(5)
-      ..write(obj.email);
+      ..write(obj.email)
+      ..writeByte(6)
+      ..write(obj.isAppleSignIn);
   }
 
   @override
@@ -63,6 +66,7 @@ TempUserModel _$TempUserModelFromJson(Map<String, dynamic> json) =>
       countryCode: json['country'] as String?,
       phoneNumber: json['phone_number'] as String?,
       email: json['email'] as String?,
+      isAppleSignIn: json['is_apple_sign_in'] as bool?,
     );
 
 Map<String, dynamic> _$TempUserModelToJson(TempUserModel instance) =>
@@ -72,4 +76,5 @@ Map<String, dynamic> _$TempUserModelToJson(TempUserModel instance) =>
       'country': instance.countryCode,
       'phone_number': instance.phoneNumber,
       'email': instance.email,
+      'is_apple_sign_in': instance.isAppleSignIn,
     };

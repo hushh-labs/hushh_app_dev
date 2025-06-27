@@ -84,12 +84,19 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
   UserModel? user;
 
   List<Widget> get userGuidePages {
+    final tempUser = AppLocalStorage.tempUser;
+    final isAppleSignIn = tempUser?.isAppleSignIn == true;
+    
     return sl<HomePageBloc>().entity == Entity.user
         ? [
             const CreateFirstCardPage(),
-            const UserGuideQuestionPage(
-                question: UserGuideQuestionType.emailOrPhone),
-            const UserGuideQuestionPage(question: UserGuideQuestionType.name),
+            // Only add email step if Apple didn't provide email
+            if (!isAppleSignIn || tempUser?.email == null || tempUser!.email!.isEmpty)
+              const UserGuideQuestionPage(
+                  question: UserGuideQuestionType.emailOrPhone),
+            // Only add name step if Apple didn't provide name  
+            if (!isAppleSignIn || tempUser?.name == null || tempUser!.name!.isEmpty)
+              const UserGuideQuestionPage(question: UserGuideQuestionType.name),
             // const UserGuideQuestionPage(
             //     question: UserGuideQuestionType.multiChoiceQuestion,
             //     multiChoiceQuestion: MultiChoiceQuestions.whyInstallHushh),
@@ -105,9 +112,13 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
           ]
         : [
             // const CreateFirstCardPage(),
-            const UserGuideQuestionPage(question: UserGuideQuestionType.name),
+            // Only add name step if Apple didn't provide name
+            if (!isAppleSignIn || tempUser?.name == null || tempUser!.name!.isEmpty)
+              const UserGuideQuestionPage(question: UserGuideQuestionType.name),
             // const AgentGuideProfileImagePage(),
-            if (!(user?.email != null && user?.phoneNumber != null))
+            // Only add email/phone step if Apple didn't provide email AND user doesn't have both email and phone
+            if ((!isAppleSignIn || tempUser?.email == null || tempUser!.email!.isEmpty) && 
+                !(user?.email != null && user?.phoneNumber != null))
               const UserGuideQuestionPage(
                   question: UserGuideQuestionType.emailOrPhone),
             if (user?.dob == null)
@@ -179,12 +190,23 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
   FutureOr<void> signUpInitializeEvent(
       SignUpInitializeEvent event, Emitter<SignUpPageState> emit) {
     emit(BasicInfoUpdatingState());
-    // if (AppLocalStorage.tempUser?.email != null) {
-    //   emailOrPhoneController.text = auth.currentUser!.email!;
-    // }
-    firstNameController.clear();
-    if (AppLocalStorage.tempUser?.name != null) {
-      firstNameController.text = AppLocalStorage.tempUser!.name!;
+    // Pre-fill from Apple Sign-In if available
+    final tempUser = AppLocalStorage.tempUser;
+    if (tempUser?.name != null && tempUser!.name!.isNotEmpty) {
+      // Try to split name into first and last
+      final nameParts = tempUser.name!.split(' ');
+      firstNameController.text = nameParts.first;
+      if (nameParts.length > 1) {
+        lastNameController.text = nameParts.sublist(1).join(' ');
+      }
+    } else {
+      firstNameController.clear();
+      lastNameController.clear();
+    }
+    if (tempUser?.email != null && tempUser!.email!.isNotEmpty) {
+      emailOrPhoneController.text = tempUser.email!;
+    } else {
+      emailOrPhoneController.clear();
     }
     sl<CardMarketBloc>().add(FetchBrandsEvent());
     sl<AgentSignUpPageBloc>().add(FetchBrandCategoriesEvent());
