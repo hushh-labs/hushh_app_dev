@@ -1,3 +1,4 @@
+// app/platforms/mobile/card_market/presentation/bloc/card_market_bloc/bloc.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -11,6 +12,7 @@ import 'package:fuzzywuzzy/model/extracted_result.dart';
 import 'package:hushh_app/app/platforms/mobile/auth/domain/entities/agent.dart';
 import 'package:hushh_app/app/platforms/mobile/auth/domain/usecases/fetch_agents_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/auth/presentation/bloc/agent_sign_up_bloc/bloc.dart';
+import 'package:hushh_app/app/platforms/mobile/auth/presentation/bloc/sign_up_bloc/bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_market/domain/usecases/delete_user_installed_card_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_market/domain/usecases/fetch_brands_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_market/domain/usecases/fetch_card_market_use_case.dart';
@@ -403,11 +405,25 @@ class CardMarketBloc extends Bloc<CardMarketEvent, CardMarketState> {
       InsertCardEvent event, Emitter<CardMarketState> emit) async {
     emit(InsertingBrandState());
     final result = await insertCardUseCase(card: event.brandCard);
-    result.fold((l) {}, (brands) {
+    result.fold((l) {
+      print('🔧 [AGENT_FIX] Error inserting card: $l');
+      emit(BrandInsertingState());
+    }, (brands) {
+      print(
+          '🔧 [AGENT_FIX] Card inserted successfully, proceeding with agent signup...');
       if (event.afterInsertingCardSignUpAgent) {
-        sl<AgentSignUpPageBloc>().selectedBrand = event.brand!;
-        sl<AgentSignUpPageBloc>()
-            .add(AgentSignUpEvent(AppLocalStorage.user!, event.context));
+        if (AppLocalStorage.user != null) {
+          print('🔧 [AGENT_FIX] User found, proceeding with agent signup...');
+          sl<AgentSignUpPageBloc>().selectedBrand = event.brand!;
+          sl<AgentSignUpPageBloc>()
+              .add(AgentSignUpEvent(AppLocalStorage.user!, event.context));
+        } else {
+          print(
+              '🔧 [AGENT_FIX] ERROR: AppLocalStorage.user is null! Creating user first...');
+          // Create user first, then proceed with agent signup
+          sl<SignUpPageBloc>().add(SignUpEvent(event.context,
+              onboardStatus: UserOnboardStatus.signUpForm));
+        }
       }
       emit(BrandInsertingState());
     });

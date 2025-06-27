@@ -419,17 +419,45 @@ class AgentSignUpPageBloc
     emit(CheckingIfCardExistsInCardMarketState());
     Utils().showLoader(event.context);
     final result = await cardExistsUseCase(id: event.brand.id!);
-    result.fold((l) => null, (card) {
+    result.fold((l) {
+      // Hide loader on error
+      Navigator.pop(event.context);
+      print('🔧 [AGENT_FIX] Error checking card existence: $l');
+      ToastManager(Toast(
+              title: 'Error checking brand card',
+              description: 'Please try again',
+              type: ToastificationType.error))
+          .show(event.context);
+    }, (card) {
+      // Hide loader before proceeding
+      Navigator.pop(event.context);
+      
+      // Always create new card for agent, even if one exists
+      // Multiple cards can exist for same brand
       if (card == null) {
+        print('🔧 [AGENT_FIX] No existing card found, creating new card for agent...');
         emit(CardDoesNotExistsInCardMarketState());
-        add(CreateNewBrandCardEvent(
-            event.brand, event.brand.id!, event.context, signUp: true));
+        ToastManager(Toast(
+                title: 'Creating ${event.brand.brandName} card...',
+                description: 'Setting up your agent card',
+                type: ToastificationType.info))
+            .show(event.context);
       } else {
-        newlyCreatedCard = card;
-        selectedBrand = event.brand;
-        add(AgentSignUpEvent(AppLocalStorage.user!, event.context));
+        print('🔧 [AGENT_FIX] Existing card found, but creating new card for agent anyway...');
         emit(CardExistsInCardMarketState());
+        ToastManager(Toast(
+                title: 'Creating new ${event.brand.brandName} card...',
+                description: 'Setting up your personalized agent card',
+                type: ToastificationType.info))
+            .show(event.context);
       }
+      
+      // Show loader for card creation process
+      Utils().showLoader(event.context);
+      
+      // Always create new card for agent
+      add(CreateNewBrandCardEvent(
+          event.brand, event.brand.id!, event.context, signUp: true));
     });
   }
 

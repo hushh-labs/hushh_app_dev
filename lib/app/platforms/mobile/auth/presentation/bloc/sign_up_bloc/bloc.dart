@@ -352,6 +352,22 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
         }
       }
     } else if (question == UserGuideQuestionType.emailOrPhone) {
+      // Skip phone/email verification for agent flow to avoid JWT conflicts
+      if (sl<HomePageBloc>().entity == Entity.agent) {
+        print('🔧 [AGENT_FIX] Skipping phone/email verification for agent flow');
+        // Just store the phone/email locally without Supabase verification
+        final phoneNumber = !sl<AuthPageBloc>().isPhoneLogin
+            ? sl<SignUpPageBloc>().emailOrPhoneController.text.toLowerCase()
+            : sl<AuthPageBloc>().phoneController.text;
+        if (!sl<AuthPageBloc>().isPhoneLogin) {
+          sl<AuthPageBloc>().phoneController.text = phoneNumber;
+        }
+        userGuideController.next();
+        emit(OnNextPageState());
+        return;
+      }
+      
+      // Original user flow logic
       final email = sl<AuthPageBloc>().isPhoneLogin
           ? sl<SignUpPageBloc>().emailOrPhoneController.text.toLowerCase()
           : sl<AuthPageBloc>().email;
@@ -376,12 +392,6 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
                   type: OtpVerificationType.email,
                   onVerifyFunc: () {
                     Navigator.pop(context);
-                    // ToastManager(Toast(
-                    //     title: 'OTP Verified 🎉',
-                    //     description:
-                    //     'Almost there! Continue creating your Hushh ID Card',
-                    //     type: ToastificationType.success))
-                    //     .show(event.context);
                     userGuideController.next();
                   }));
           emit(OnNextPageState());
@@ -405,12 +415,6 @@ class SignUpPageBloc extends Bloc<SignUpPageEvent, SignUpPageState> {
                   type: OtpVerificationType.phone,
                   onVerifyFunc: () {
                     Navigator.pop(context);
-                    // ToastManager(Toast(
-                    //     title: 'OTP Verified 🎉',
-                    //     description:
-                    //     'Almost there! Continue creating your Hushh ID Card',
-                    //     type: ToastificationType.success))
-                    //     .show(event.context);
                     userGuideController.next();
                   }));
           emit(OnNextPageState());
