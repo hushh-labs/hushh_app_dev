@@ -17,6 +17,7 @@ import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/ag
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_edit_profile.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_hushh_meet.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_lookbook.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/create_lookbook.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_meeting.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_meeting_info.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_order_checkout.dart';
@@ -90,6 +91,7 @@ class AppRoutes {
   static const String agentMeetingInfo = '/agent-meeting-info';
   static const String agentProfile = '/agent-profile';
   static const String agentLookbook = '/agent-lookbook';
+  static const String createLookbook = '/create-lookbook';
   static const String agentProducts = '/agent-products';
   static const String agentOrderCheckout = '/agent-order-checkout';
   static const String agentHushhMeet = '/agent-hushh-meet';
@@ -186,6 +188,7 @@ class NavigationManager {
     AppRoutes.agentMeetingInfo: (context) => const AgentMeetingInfoPage(),
     AppRoutes.agentProfile: (context) => const AgentProfile(),
     AppRoutes.agentLookbook: (context) => const AgentLookBookPage(),
+    AppRoutes.createLookbook: (context) => const CreateLookbookPage(),
     AppRoutes.agentProducts: (context) => const AgentProducts(),
     AppRoutes.agentOrderCheckout: (context) => const AgentOrderCheckout(),
     AppRoutes.agentHushhMeet: (context) => const AgentHushhMeet(),

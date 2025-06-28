@@ -1,8 +1,10 @@
+// app/platforms/mobile/card_wallet/presentation/pages/agent_products.dart
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/agent_product.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/customer_model.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/card_wallet/bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/inventory_bloc/bloc.dart';
@@ -20,12 +22,16 @@ import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 class AgentProductsArgs {
   final ProductTileType productTileType;
   final CustomerModel? customer;
-  final int brandId;
+  final int? brandId;
+  final String? lookbookId;
+  final List<AgentProductModel>? products;
 
   AgentProductsArgs({
     required this.productTileType,
-    required this.brandId,
+    this.brandId,
     this.customer,
+    this.lookbookId,
+    this.products,
   });
 }
 
@@ -50,7 +56,12 @@ class _AgentProductsState extends State<AgentProducts> {
       print('📊 [AGENT_PRODUCTS] Initializing with brandId: ${args.brandId}');
       print('📊 [AGENT_PRODUCTS] ProductTileType: ${args.productTileType}');
       print('📊 [AGENT_PRODUCTS] Triggering FetchAllProductsEvent');
-      controller.add(FetchAllProductsEvent(args.brandId));
+      if (args.brandId != null) {
+        controller.add(FetchAllProductsEvent(args.brandId!));
+      } else {
+        print(
+            '📊 [AGENT_PRODUCTS] ERROR: brandId is null, cannot fetch products');
+      }
     });
     super.initState();
   }
@@ -67,7 +78,8 @@ class _AgentProductsState extends State<AgentProducts> {
                   bloc: controller,
                   builder: (context, state) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16).copyWith(bottom: Platform.isIOS?16:0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16)
+                          .copyWith(bottom: Platform.isIOS ? 16 : 0),
                       child: SizedBox(
                         height: 56,
                         child: HushhLinearGradientButton(
@@ -118,17 +130,27 @@ class _AgentProductsState extends State<AgentProducts> {
         child: BlocBuilder(
             bloc: controller,
             builder: (context, state) {
-              print('📊 [AGENT_PRODUCTS] BlocBuilder state: ${state.runtimeType}');
-              print('📊 [AGENT_PRODUCTS] inventoryAllProductsResult: ${controller.inventoryAllProductsResult}');
+              print(
+                  '📊 [AGENT_PRODUCTS] BlocBuilder state: ${state.runtimeType}');
+              print(
+                  '📊 [AGENT_PRODUCTS] inventoryAllProductsResult: ${controller.inventoryAllProductsResult}');
               if (controller.inventoryAllProductsResult != null) {
-                print('📊 [AGENT_PRODUCTS] Products count: ${controller.inventoryAllProductsResult!.products.length}');
+                print(
+                    '📊 [AGENT_PRODUCTS] Products count: ${controller.inventoryAllProductsResult!.products.length}');
                 print('📊 [AGENT_PRODUCTS] First few products:');
-                for (int i = 0; i < controller.inventoryAllProductsResult!.products.length && i < 3; i++) {
-                  final product = controller.inventoryAllProductsResult!.products[i];
-                  print('📊 [AGENT_PRODUCTS] Product $i: ${product.productName} - ${product.productPrice}');
+                for (int i = 0;
+                    i <
+                            controller
+                                .inventoryAllProductsResult!.products.length &&
+                        i < 3;
+                    i++) {
+                  final product =
+                      controller.inventoryAllProductsResult!.products[i];
+                  print(
+                      '📊 [AGENT_PRODUCTS] Product $i: ${product.productName} - ${product.productPrice}');
                 }
               }
-              
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

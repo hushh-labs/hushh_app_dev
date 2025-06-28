@@ -207,6 +207,11 @@ class LookBookProductBloc
 
   FutureOr<void> createLookbookEvent(
       CreateLookbookEvent event, Emitter<LookBookProductState> emit) async {
+    print('🎯 [BLOC] createLookbookEvent started');
+    print('🎯 [BLOC] Event name: ${event.name}');
+    print('🎯 [BLOC] Selected products count: ${selectedProducts.length}');
+    print('🎯 [BLOC] Selected products: ${selectedProducts.map((p) => p.productName).toList()}');
+    
     AgentLookBook lookBook = AgentLookBook(
         name: event.name,
         images: selectedProducts.take(3).map((e) => e.productImage).toList(),
@@ -214,10 +219,20 @@ class LookBookProductBloc
         createdAt: DateTime.now().toIso8601String(),
         id: const Uuid().v4(),
         hushhId: AppLocalStorage.hushhId!);
+    
+    print('🎯 [BLOC] Created lookbook object: ${lookBook.name} with ${lookBook.numberOfProducts} products');
+    
     emit(CreatingLookBookState());
+    print('🎯 [BLOC] Emitted CreatingLookBookState');
+    
     final result = await insertLookBookUseCase(
         lookbook: lookBook, products: selectedProducts);
-    await result.fold((l) => null, (r) async {
+    
+    await result.fold((l) {
+      print('🎯 [BLOC] Error creating lookbook: $l');
+      emit(DoneState());
+    }, (r) async {
+      print('🎯 [BLOC] Lookbook created successfully!');
       emit(DoneState());
       ToastManager(Toast(
               title: "Lookbook created!", type: ToastificationType.success))

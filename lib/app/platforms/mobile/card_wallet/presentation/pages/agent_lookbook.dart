@@ -117,11 +117,7 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
                                 )).show(context);
                                 return;
                               }
-                              ToastManager(Toast(
-                                      title: 'Coming Soon',
-                                      type: ToastificationType.info))
-                                  .show(context);
-                              // controller.add(UploadCatalogueEvent(context));
+                              Navigator.pushNamed(context, AppRoutes.createLookbook);
                             },
                           ),
                         ),

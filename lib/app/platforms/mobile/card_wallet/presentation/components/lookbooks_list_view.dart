@@ -4,13 +4,13 @@ import 'package:focused_menu/modals.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/agent_lookbook.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/agent_product.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/lookbook_product_bloc/bloc.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/pages/agent_products.dart';
 import 'package:hushh_app/app/shared/config/constants/enums.dart';
 import 'package:hushh_app/app/shared/config/routes/routes.dart';
 import 'package:hushh_app/app/shared/config/theme/text_theme.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:tuple/tuple.dart';
 
 class LookBooksListView extends StatelessWidget {
   final List<AgentLookBook> lookbooks;
@@ -62,19 +62,21 @@ class LookBooksListView extends StatelessWidget {
                     }),
               ],
               onPressed: () {
+                print('📖 [LOOKBOOK] Lookbook tapped: ${lookbook.name}');
                 if(sendLookBook) {
                   Navigator.pop(context, [lookbook]);
                   return;
                 }
                 controller.selectedLookBook = lookbook;
+                print('📖 [LOOKBOOK] Navigating to agent products with lookbook: ${lookbook.id}');
                 Navigator.pushNamed(
                   context,
                   AppRoutes.agentProducts,
-                  arguments: Tuple3<AgentProductsPageStatus, String?,
-                          List<AgentProductModel>?>(
-                      AgentProductsPageStatus.lookbookOpened,
-                      lookbook.id,
-                      null),
+                  arguments: AgentProductsArgs(
+                    productTileType: ProductTileType.viewProducts,
+                    lookbookId: lookbook.id,
+                    products: null,
+                  ),
                 );
               },
               child: Card(
