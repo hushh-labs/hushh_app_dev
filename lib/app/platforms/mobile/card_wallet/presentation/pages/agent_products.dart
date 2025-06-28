@@ -47,6 +47,9 @@ class _AgentProductsState extends State<AgentProducts> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final args =
           ModalRoute.of(context)!.settings.arguments as AgentProductsArgs;
+      print('📊 [AGENT_PRODUCTS] Initializing with brandId: ${args.brandId}');
+      print('📊 [AGENT_PRODUCTS] ProductTileType: ${args.productTileType}');
+      print('📊 [AGENT_PRODUCTS] Triggering FetchAllProductsEvent');
       controller.add(FetchAllProductsEvent(args.brandId));
     });
     super.initState();
@@ -115,6 +118,17 @@ class _AgentProductsState extends State<AgentProducts> {
         child: BlocBuilder(
             bloc: controller,
             builder: (context, state) {
+              print('📊 [AGENT_PRODUCTS] BlocBuilder state: ${state.runtimeType}');
+              print('📊 [AGENT_PRODUCTS] inventoryAllProductsResult: ${controller.inventoryAllProductsResult}');
+              if (controller.inventoryAllProductsResult != null) {
+                print('📊 [AGENT_PRODUCTS] Products count: ${controller.inventoryAllProductsResult!.products.length}');
+                print('📊 [AGENT_PRODUCTS] First few products:');
+                for (int i = 0; i < controller.inventoryAllProductsResult!.products.length && i < 3; i++) {
+                  final product = controller.inventoryAllProductsResult!.products[i];
+                  print('📊 [AGENT_PRODUCTS] Product $i: ${product.productName} - ${product.productPrice}');
+                }
+              }
+              
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

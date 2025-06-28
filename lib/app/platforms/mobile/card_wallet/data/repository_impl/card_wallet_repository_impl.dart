@@ -1,3 +1,4 @@
+// app/platforms/mobile/card_wallet/data/repository_impl/card_wallet_repository_impl.dart
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -270,18 +271,46 @@ class CardWalletPageRepositoryImpl extends CardWalletPageRepository {
       () => cardWalletPagesSupabaseDataSource.fetchProductsResultFromInventory(
           brandId, configurationId),
       (value) {
-        final result = value as Map<String, dynamic>?;
-        if (result != null) {
-          return CachedInventoryModel.fromJson(result);
+        if (value == null) {
+          return CachedInventoryModel(0, []);
         }
-        return null;
+        return CachedInventoryModel.fromJson(value);
+      },
+    );
+  }
+
+  Future<Either<ErrorState, CachedInventoryModel>> fetchAgentProducts(
+      String hushhId) async {
+    return await ErrorHandler.callSupabase(
+      () => cardWalletPagesSupabaseDataSource.fetchAgentProducts(hushhId),
+      (value) {
+        print('📊 [REPOSITORY] Raw data from Supabase: ${value.length} items');
+        if (value.isNotEmpty) {
+          print('📊 [REPOSITORY] First item structure: ${value.first.keys}');
+          print('📊 [REPOSITORY] First item data: ${value.first}');
+        }
+        
+        List<AgentProductModel> products = [];
+        for (int i = 0; i < value.length; i++) {
+          try {
+            final product = AgentProductModel.fromCachedInventoryJson(value[i]);
+            products.add(product);
+          } catch (e) {
+            print('📊 [REPOSITORY] Error parsing product $i: $e');
+            print('📊 [REPOSITORY] Problematic data: ${value[i]}');
+            // Continue with next product instead of failing completely
+          }
+        }
+        
+        print('📊 [REPOSITORY] Successfully parsed ${products.length} products out of ${value.length}');
+        return CachedInventoryModel(products.length, products);
       },
     );
   }
 
   @override
   Future<Either<ErrorState, void>> insertInventory(
-      payload,
+      dynamic payload,
       int configurationId,
       int brandId,
       InventoryServer inventorySever,
@@ -386,8 +415,8 @@ class CardWalletPageRepositoryImpl extends CardWalletPageRepository {
   Future<Either<ErrorState, void>> insertSharedPreference(
       UserPreference preference, String hushhId, int cardId) async {
     return await ErrorHandler.callSupabase(
-      () =>
-          cardWalletPagesSupabaseDataSource.insertSharedPreference(preference, hushhId, cardId),
+      () => cardWalletPagesSupabaseDataSource.insertSharedPreference(
+          preference, hushhId, cardId),
       (value) {},
     );
   }
@@ -454,10 +483,11 @@ class CardWalletPageRepositoryImpl extends CardWalletPageRepository {
   }
 
   @override
-  Future<Either<ErrorState, void>> acceptDataConsentRequest(String requestId) async {
+  Future<Either<ErrorState, void>> acceptDataConsentRequest(
+      String requestId) async {
     return await ErrorHandler.callSupabase(
-          () => cardWalletPageApiDataSource.acceptDataConsentRequest(requestId),
-          (value) {},
+      () => cardWalletPageApiDataSource.acceptDataConsentRequest(requestId),
+      (value) {},
     );
   }
 }

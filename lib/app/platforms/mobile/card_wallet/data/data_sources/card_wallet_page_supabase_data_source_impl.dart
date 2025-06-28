@@ -503,4 +503,16 @@ class CardWalletPageSupabaseDataSourceImpl
             .select())
         .firstOrNull;
   }
+
+  // New method to fetch agent's own products
+  Future<List<Map<String, dynamic>>> fetchAgentProducts(String hushhId) async {
+    print('📊 [SUPABASE] Fetching agent products for hushhId: $hushhId');
+    final data = await supabase
+        .from(DbTables.agentProductsTable)
+        .select()
+        .eq('hushh_id', hushhId)
+        .order('addedAt', ascending: false);
+    print('📊 [SUPABASE] Found ${data.length} products for agent');
+    return data;
+  }
 }

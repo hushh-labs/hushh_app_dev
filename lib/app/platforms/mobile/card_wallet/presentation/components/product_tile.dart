@@ -64,15 +64,77 @@ class ProductTile extends StatelessWidget {
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(16),
                           topRight: Radius.circular(16)),
-                      child: Image.network(
-                        product.productImage.split(',').first,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.topCenter,
-                        errorBuilder: (context, _, trace) {
-                          return const SizedBox();
-                        },
-                      ),
+                      child: product.productImage.isNotEmpty
+                          ? Image.network(
+                              product.productImage.split(',').first,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              alignment: Alignment.topCenter,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  width: double.infinity,
+                                  color: Colors.grey[100],
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                print('📊 [IMAGE] Error loading image: ${product.productImage}');
+                                print('📊 [IMAGE] Error: $error');
+                                return Container(
+                                  width: double.infinity,
+                                  color: Colors.grey[100],
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image_not_supported,
+                                        size: 40,
+                                        color: Colors.grey[400],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Image not available',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              width: double.infinity,
+                              color: Colors.grey[100],
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.image,
+                                    size: 40,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'No image',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                     ),
                   ),
                   Expanded(

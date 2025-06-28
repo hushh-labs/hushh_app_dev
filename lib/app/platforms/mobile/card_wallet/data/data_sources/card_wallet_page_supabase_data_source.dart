@@ -59,6 +59,8 @@ abstract class CardWalletPageSupabaseDataSource {
 
   Future<Map<String, dynamic>?> fetchProductsResultFromInventory(
       int brandId, int configurationId);
+  
+  Future<List<Map<String, dynamic>>> fetchAgentProducts(String hushhId);
 
   Future<void> insertInventory(
       dynamic payload,

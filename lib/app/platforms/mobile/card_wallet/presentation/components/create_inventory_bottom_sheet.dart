@@ -92,9 +92,14 @@ class CreateInventoryBottomSheet extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8))),
                       onPressed: () {
+                        print('📊 [INVENTORY] Google Sheets button clicked');
                         Navigator.pop(context);
+                        print('📊 [INVENTORY] Closed inventory solution selection sheet');
+                        
                         sl<InventoryBloc>().currentInventoryServer =
                             InventoryServer.gsheets_public_server;
+                        print('📊 [INVENTORY] Set inventory server to: gsheets_public_server');
+                        
                         showModalBottomSheet(
                           isDismissible: true,
                           enableDrag: true,
@@ -104,6 +109,7 @@ class CreateInventoryBottomSheet extends StatelessWidget {
                           builder: (BuildContext context) =>
                               const AddGoogleSheetsInventoryBottomSheet(),
                         );
+                        print('📊 [INVENTORY] Opened Google Sheets credentials bottom sheet');
                       },
                       child: const AutoSizeText('Google Sheets',
                           maxLines: 1, softWrap: false),
@@ -119,31 +125,27 @@ class CreateInventoryBottomSheet extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFEEEEEE),
-                          elevation: 0,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8))),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        sl<InventoryBloc>().currentInventoryServer =
-                            InventoryServer.gsheets_public_server;
-                        showModalBottomSheet(
-                          isDismissible: true,
-                          enableDrag: true,
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (BuildContext context) =>
-                              const AddWhatsappInventoryBottomSheet(),
-                        );
-                      },
-                      child: const AutoSizeText(
-                        'Whatsapp',
-                        maxLines: 1,
-                        softWrap: false,
+                    child: Opacity(
+                      opacity: 0.6,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFEEEEEE),
+                            elevation: 0,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8))),
+                        onPressed: () {
+                          ToastManager(Toast(
+                                  title: 'WhatsApp Integration Coming Soon!',
+                                  description: 'We are working on bringing WhatsApp inventory management to you',
+                                  type: ToastificationType.info))
+                              .show(context);
+                        },
+                        child: const AutoSizeText(
+                          'Whatsapp',
+                          maxLines: 1,
+                          softWrap: false,
+                        ),
                       ),
                     ),
                   ),

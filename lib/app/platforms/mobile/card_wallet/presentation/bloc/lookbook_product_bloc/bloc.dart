@@ -14,6 +14,7 @@ import 'package:hushh_app/app/platforms/mobile/card_market/domain/usecases/fetch
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/agent_lookbook.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/agent_product.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/cached_inventory_model.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/data/repository_impl/card_wallet_repository_impl.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/delete_lookbook_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/delete_product_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/fetch_look_books_use_case.dart';
@@ -152,23 +153,43 @@ class LookBookProductBloc
 
   FutureOr<void> fetchAllProductsEvent(
       FetchAllProductsEvent event, Emitter<LookBookProductState> emit) async {
+    print('📊 [LOOKBOOK_BLOC] fetchAllProductsEvent started');
+    print('📊 [LOOKBOOK_BLOC] Brand ID: ${event.brandId}');
+    
+    // Get agent's hushh_id
+    String? hushhId = agent?.hushhId;
+    if (hushhId == null) {
+      print('📊 [LOOKBOOK_BLOC] Error: No agent hushh_id found');
+      inventoryAllProductsResult = CachedInventoryModel(0, []);
+      emit(DoneState());
+      return;
+    }
+    
+    print('📊 [LOOKBOOK_BLOC] Agent Hushh ID: $hushhId');
     selectedProducts = [];
     inventoryAllProductsResult = null;
     emit(LoadingState());
-    final result = await fetchBrandProductsUseCase(brandId: event.brandId);
+    
+    // Use our new method to fetch agent's own products
+    print('📊 [LOOKBOOK_BLOC] Calling fetchAgentProducts...');
+    final cardWalletRepo = sl<CardWalletPageRepositoryImpl>();
+    final result = await cardWalletRepo.fetchAgentProducts(hushhId);
+    
     result.fold((l) {
+      print('📊 [LOOKBOOK_BLOC] Error fetching agent products: $l');
       inventoryAllProductsResult = CachedInventoryModel(0, []);
       emit(DoneState());
     }, (r) {
+      print('📊 [LOOKBOOK_BLOC] Successfully fetched agent products');
+      print('📊 [LOOKBOOK_BLOC] Products count: ${r.products.length}');
+      if (r.products.isNotEmpty) {
+        print('📊 [LOOKBOOK_BLOC] First product: ${r.products.first.productName}');
+        print('📊 [LOOKBOOK_BLOC] First product price: ${r.products.first.productPrice}');
+      }
       inventoryAllProductsResult = r;
       allProductSearch = r.products;
-      // if (event.selectedProducts != null) {
-      //   List<String> selectedProductIds =
-      //       event.selectedProducts!.map((e) => e.productSkuUniqueId).toList();
-      //   inventoryAllProductsResult!.products.removeWhere((element) =>
-      //       selectedProductIds.contains(element.productSkuUniqueId));
-      // }
       emit(DoneState());
+      print('📊 [LOOKBOOK_BLOC] Emitted DoneState');
     });
   }
 
