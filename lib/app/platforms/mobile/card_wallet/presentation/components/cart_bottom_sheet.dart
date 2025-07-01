@@ -5,6 +5,7 @@ import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/inv
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
 import 'package:hushh_app/app/shared/config/theme/text_theme.dart';
 import 'package:hushh_app/app/shared/core/utils/toast_manager.dart';
+import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -610,9 +611,13 @@ class _OrderConfirmationSheet extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    _DetailRow('Name', 'Hushh User'),
-                    _DetailRow('Email', 'user@hushh.ai'),
-                    _DetailRow('Phone', '+1 (555) 123-4567'),
+                    _DetailRow('Name', AppLocalStorage.user?.name.trim().isNotEmpty == true 
+                        ? AppLocalStorage.user!.name 
+                        : 'Hushh User'),
+                    _DetailRow('Email', AppLocalStorage.user?.email ?? 'user@hushh.ai'),
+                    _DetailRow('Phone', AppLocalStorage.user?.phoneNumberWithCountryCode.isNotEmpty == true 
+                        ? AppLocalStorage.user!.phoneNumberWithCountryCode 
+                        : 'Not provided'),
                     _DetailRow('Delivery', 'Agent will coordinate'),
                   ],
                 ),
