@@ -17,7 +17,6 @@ class CsvParser {
     'product_title',
     'price_available',
     'additional_image',
-    'stock_quantity',
   ];
 
   static const List<String> optionalHeaders = [
@@ -36,11 +35,13 @@ class CsvParser {
 
       // Convert bytes to string
       String csvString = utf8.decode(fileBytes);
-      print('📊 [CSV_PARSER] CSV content length: ${csvString.length} characters');
+      print(
+          '📊 [CSV_PARSER] CSV content length: ${csvString.length} characters');
 
       // Parse CSV
-      List<List<dynamic>> csvData = const CsvToListConverter().convert(csvString);
-      
+      List<List<dynamic>> csvData =
+          const CsvToListConverter().convert(csvString);
+
       if (csvData.isEmpty) {
         throw Exception('CSV file is empty');
       }
@@ -48,7 +49,8 @@ class CsvParser {
       print('📊 [CSV_PARSER] Total rows: ${csvData.length}');
 
       // Get headers (first row)
-      List<String> headers = csvData.first.map((e) => e.toString().toLowerCase().trim()).toList();
+      List<String> headers =
+          csvData.first.map((e) => e.toString().toLowerCase().trim()).toList();
       print('📊 [CSV_PARSER] Headers found: $headers');
 
       // Validate headers
@@ -60,8 +62,12 @@ class CsvParser {
       }
 
       if (missingHeaders.isNotEmpty) {
-        throw Exception('Missing required headers: ${missingHeaders.join(', ')}');
+        throw Exception(
+            'Missing required headers: ${missingHeaders.join(', ')}');
       }
+
+      // Check if stock_quantity is present
+      final hasStockQuantity = headers.contains('stock_quantity');
 
       print('📊 [CSV_PARSER] All required headers found ✅');
 
@@ -70,11 +76,16 @@ class CsvParser {
       for (int i = 1; i < csvData.length; i++) {
         try {
           List<dynamic> row = csvData[i];
-          
+
           // Create map from headers and row data
           Map<String, dynamic> rowMap = {};
           for (int j = 0; j < headers.length && j < row.length; j++) {
             rowMap[headers[j]] = row[j];
+          }
+
+          // If stock_quantity is missing, set it to 0
+          if (!hasStockQuantity) {
+            rowMap['stock_quantity'] = 0;
           }
 
           // Create product model
@@ -103,14 +114,16 @@ class CsvParser {
   static Future<bool> validateCsvFormat(Uint8List fileBytes) async {
     try {
       String csvString = utf8.decode(fileBytes);
-      List<List<dynamic>> csvData = const CsvToListConverter().convert(csvString);
-      
+      List<List<dynamic>> csvData =
+          const CsvToListConverter().convert(csvString);
+
       if (csvData.isEmpty) {
         return false;
       }
 
-      List<String> headers = csvData.first.map((e) => e.toString().toLowerCase().trim()).toList();
-      
+      List<String> headers =
+          csvData.first.map((e) => e.toString().toLowerCase().trim()).toList();
+
       // Check if all required headers are present
       for (String requiredHeader in requiredHeaders) {
         if (!headers.contains(requiredHeader.toLowerCase())) {

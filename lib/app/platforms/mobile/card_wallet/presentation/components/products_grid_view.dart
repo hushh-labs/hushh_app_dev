@@ -34,8 +34,8 @@ class ProductsGridView extends StatelessWidget {
             childAspectRatio: .65,
           ),
           padding: fromCardView ? EdgeInsets.zero : null,
-          shrinkWrap: fromCardView ? true : false,
-          physics: fromCardView ? const NeverScrollableScrollPhysics() : null,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: products.length,
           itemBuilder: (context, index) {
             final product = products[index];

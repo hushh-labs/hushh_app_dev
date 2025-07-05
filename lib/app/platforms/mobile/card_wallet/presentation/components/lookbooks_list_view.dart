@@ -63,12 +63,13 @@ class LookBooksListView extends StatelessWidget {
               ],
               onPressed: () {
                 print('📖 [LOOKBOOK] Lookbook tapped: ${lookbook.name}');
-                if(sendLookBook) {
+                if (sendLookBook) {
                   Navigator.pop(context, [lookbook]);
                   return;
                 }
                 controller.selectedLookBook = lookbook;
-                print('📖 [LOOKBOOK] Navigating to agent products with lookbook: ${lookbook.id}');
+                print(
+                    '📖 [LOOKBOOK] Navigating to agent products with lookbook: ${lookbook.id}');
                 Navigator.pushNamed(
                   context,
                   AppRoutes.agentProducts,
@@ -82,43 +83,69 @@ class LookBooksListView extends StatelessWidget {
               child: Card(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: GridView(
+                  child: GridView.builder(
                     shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8),
-                    children: List.generate(
-                        lookbook.images.length,
-                        (index) => Container(
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFeaeff3),
-                                  borderRadius: BorderRadius.circular(8),
-                                  image: DecorationImage(
-                                      image: NetworkImage(lookbook.images[index]
-                                          .split(',')
-                                          .first))),
-                            ))
-                      ..add(lookbook.images.length == 3 &&
-                              (lookbook.numberOfProducts -
-                                      lookbook.images.length) >
-                                  0
-                          ? Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFeaeff3),
-                                borderRadius: BorderRadius.circular(8),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                    ),
+                    itemCount: 4,
+                    itemBuilder: (context, gridIndex) {
+                      // If there are more than 4 products, last cell is '+N'
+                      if (gridIndex == 3 && lookbook.numberOfProducts > 4) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFeaeff3),
+                            borderRadius: BorderRadius.circular(8),
+                            image: lookbook.images.length > 3
+                                ? DecorationImage(
+                                    image: NetworkImage(
+                                        lookbook.images[3].split(',').first),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "+${lookbook.numberOfProducts - 3}",
+                                style: context.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
                               ),
-                              child: Center(
-                                child: Text(
-                                  "+${lookbook.numberOfProducts - lookbook.images.length}",
-                                  style: context.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFFA2A2A2)),
-                                ),
-                              ),
-                            )
-                          : const SizedBox()),
+                            ),
+                          ),
+                        );
+                      }
+                      // Show image if available
+                      if (gridIndex < lookbook.images.length) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFeaeff3),
+                            borderRadius: BorderRadius.circular(8),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  lookbook.images[gridIndex].split(',').first),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      }
+                      // Otherwise, show empty placeholder
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFeaeff3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

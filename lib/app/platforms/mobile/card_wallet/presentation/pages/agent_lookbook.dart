@@ -50,12 +50,13 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
                   radius: 12,
                   icon: Icons.inventory_2_outlined,
                   onTap: () {
-                    if(AppLocalStorage.agent == null) {
+                    if (AppLocalStorage.agent == null) {
                       ToastManager(Toast(
-                          title: 'Please complete profile',
-                          description: 'Inventory can only be created once profile is completed',
-                          type: ToastificationType.error
-                      )).show(context);
+                              title: 'Please complete profile',
+                              description:
+                                  'Inventory can only be created once profile is completed',
+                              type: ToastificationType.error))
+                          .show(context);
                       return;
                     }
                     Navigator.pushNamed(context, AppRoutes.manageInventory);
@@ -87,10 +88,16 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: BlocBuilder(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: BlocBuilder<LookBookProductBloc, LookBookProductState>(
             bloc: controller,
+            buildWhen: (previous, current) =>
+                current is LookBooksFetchedState ||
+                current is LookBooksSearchState ||
+                current is DoneState ||
+                current is LookBooksErrorState,
             builder: (context, state) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +107,9 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
                     onChanged: (value) {
                       controller.add(const SearchLookBookEvent());
                     },
+                    hintText: 'Search',
                   ),
+                  const SizedBox(height: 16),
                   if (!sendLookBook)
                     Row(
                       children: [
@@ -109,15 +118,17 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
                             icon: Icons.add,
                             name: "Create Lookbook",
                             onTap: () {
-                              if(AppLocalStorage.agent == null) {
+                              if (AppLocalStorage.agent == null) {
                                 ToastManager(Toast(
-                                    title: 'Please complete profile',
-                                    description: 'Complete your profile to view products',
-                                    type: ToastificationType.error
-                                )).show(context);
+                                        title: 'Please complete profile',
+                                        description:
+                                            'Complete your profile to view products',
+                                        type: ToastificationType.error))
+                                    .show(context);
                                 return;
                               }
-                              Navigator.pushNamed(context, AppRoutes.createLookbook);
+                              Navigator.pushNamed(
+                                  context, AppRoutes.createLookbook);
                             },
                           ),
                         ),
@@ -127,12 +138,13 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
                             icon: Icons.dashboard,
                             name: "View All Products",
                             onTap: () {
-                              if(AppLocalStorage.agent == null) {
+                              if (AppLocalStorage.agent == null) {
                                 ToastManager(Toast(
-                                    title: 'Please complete profile',
-                                    description: 'Products can only be accessed after completing your profile',
-                                    type: ToastificationType.error
-                                )).show(context);
+                                        title: 'Please complete profile',
+                                        description:
+                                            'Products can only be accessed after completing your profile',
+                                        type: ToastificationType.error))
+                                    .show(context);
                                 return;
                               }
                               Navigator.pushNamed(
@@ -149,42 +161,41 @@ class _AgentLookBookPageState extends State<AgentLookBookPage> {
                         )
                       ],
                     ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: controller.lookbooks != null
-                        ? controller.lookbooks!.isNotEmpty
-                            ? LookBooksListView(
-                                sendLookBook: sendLookBook,
-                                lookbooks: state is LookBooksSearchState
-                                    ? controller.lookBookSearch
-                                    : controller.lookbooks!,
-                              )
-                            : Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Lottie.asset('assets/empty-lookbook.json',
-                                        width: 45.w),
-                                    const SizedBox(height: 28),
-                                    const Text(
-                                      'Hey! lets create a look book for you. Look books are a collection of your products that you create and share it with potential Users',
-                                      style:
-                                          TextStyle(color: Color(0xFFA2A2A2)),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(height: 10.h),
-                                  ],
-                                ),
-                              )
-                        : AppLocalStorage.hushhId == null
-                            ? const Center(child: Text('No Products found!'))
-                            : const Center(
-                                child: CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  controller.lookbooks != null
+                      ? controller.lookbooks!.isNotEmpty
+                          ? LookBooksListView(
+                              sendLookBook: sendLookBook,
+                              lookbooks: state is LookBooksSearchState
+                                  ? controller.lookBookSearch
+                                  : controller.lookbooks!,
+                            )
+                          : Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Lottie.asset('assets/empty-lookbook.json',
+                                      width: 45.w),
+                                  const SizedBox(height: 28),
+                                  const Text(
+                                    'Hey! lets create a look book for you. Look books are a collection of your products that you create and share it with potential Users',
+                                    style: TextStyle(color: Color(0xFFA2A2A2)),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 10.h),
+                                ],
                               ),
-                  )
+                            )
+                      : AppLocalStorage.hushhId == null
+                          ? const Center(child: Text('No Products found!'))
+                          : const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                 ],
               );
-            }),
+            },
+          ),
+        ),
       ),
     );
   }

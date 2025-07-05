@@ -18,6 +18,7 @@ import 'package:hushh_app/app/shared/config/theme/text_theme.dart';
 import 'package:hushh_app/app/shared/core/components/custom_text_field.dart';
 import 'package:hushh_app/app/shared/core/components/hushh_agent_button.dart';
 import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
+import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 
 class AgentProductsArgs {
   final ProductTileType productTileType;
@@ -53,14 +54,22 @@ class _AgentProductsState extends State<AgentProducts> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final args =
           ModalRoute.of(context)!.settings.arguments as AgentProductsArgs;
-      print('📊 [AGENT_PRODUCTS] Initializing with brandId: ${args.brandId}');
-      print('📊 [AGENT_PRODUCTS] ProductTileType: ${args.productTileType}');
-      print('📊 [AGENT_PRODUCTS] Triggering FetchAllProductsEvent');
-      if (args.brandId != null) {
+      print(
+          '📊 [AGENT_PRODUCTS] Initializing with brandId: \\${args.brandId}, lookbookId: \\${args.lookbookId}');
+      print('📊 [AGENT_PRODUCTS] ProductTileType: \\${args.productTileType}');
+      if (args.lookbookId != null) {
+        // If products are not loaded, fetch all products for the agent's brand
+        if (controller.inventoryAllProductsResult == null &&
+            AppLocalStorage.agent != null) {
+          controller
+              .add(FetchAllProductsEvent(AppLocalStorage.agent!.agentBrandId));
+        }
+        // Otherwise, products will be filtered by lookbookId in build
+      } else if (args.brandId != null) {
         controller.add(FetchAllProductsEvent(args.brandId!));
       } else {
         print(
-            '📊 [AGENT_PRODUCTS] ERROR: brandId is null, cannot fetch products');
+            '📊 [AGENT_PRODUCTS] No lookbookId or brandId provided, cannot fetch products');
       }
     });
     super.initState();
@@ -70,10 +79,31 @@ class _AgentProductsState extends State<AgentProducts> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as AgentProductsArgs;
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton:
-          args.productTileType == ProductTileType.selectProducts
+
+    return BlocBuilder<LookBookProductBloc, LookBookProductState>(
+      bloc: controller,
+      builder: (context, state) {
+        if (controller.inventoryAllProductsResult == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // Filter products by lookbookId if present
+        List<AgentProductModel> products = [];
+        if (args.lookbookId != null) {
+          products = controller.inventoryAllProductsResult!.products
+              .where((p) => p.lookbookId == args.lookbookId)
+              .toList();
+        } else {
+          products = controller.inventoryAllProductsResult!.products;
+        }
+
+        return Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: args.productTileType ==
+                  ProductTileType.selectProducts
               ? BlocBuilder(
                   bloc: controller,
                   builder: (context, state) {
@@ -107,77 +137,78 @@ class _AgentProductsState extends State<AgentProducts> {
                   },
                 )
               : null,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: SvgPicture.asset('assets/back.svg')),
-        ),
-        centerTitle: false,
-        title: Text(
-          args.productTileType == ProductTileType.selectProducts
-              ? 'Select Products'
-              : 'All Products',
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: BlocBuilder(
-            bloc: controller,
-            builder: (context, state) {
-              print(
-                  '📊 [AGENT_PRODUCTS] BlocBuilder state: ${state.runtimeType}');
-              print(
-                  '📊 [AGENT_PRODUCTS] inventoryAllProductsResult: ${controller.inventoryAllProductsResult}');
-              if (controller.inventoryAllProductsResult != null) {
-                print(
-                    '📊 [AGENT_PRODUCTS] Products count: ${controller.inventoryAllProductsResult!.products.length}');
-                print('📊 [AGENT_PRODUCTS] First few products:');
-                for (int i = 0;
-                    i <
-                            controller
-                                .inventoryAllProductsResult!.products.length &&
-                        i < 3;
-                    i++) {
-                  final product =
-                      controller.inventoryAllProductsResult!.products[i];
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            elevation: 0,
+            backgroundColor: Colors.white,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: SvgPicture.asset('assets/back.svg')),
+            ),
+            centerTitle: false,
+            title: Text(
+              args.productTileType == ProductTileType.selectProducts
+                  ? 'Select Products'
+                  : 'All Products',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: BlocBuilder(
+                bloc: controller,
+                builder: (context, state) {
                   print(
-                      '📊 [AGENT_PRODUCTS] Product $i: ${product.productName} - ${product.productPrice}');
-                }
-              }
+                      '📊 [AGENT_PRODUCTS] BlocBuilder state: ${state.runtimeType}');
+                  print(
+                      '📊 [AGENT_PRODUCTS] inventoryAllProductsResult: ${controller.inventoryAllProductsResult}');
+                  if (controller.inventoryAllProductsResult != null) {
+                    print(
+                        '📊 [AGENT_PRODUCTS] Products count: ${controller.inventoryAllProductsResult!.products.length}');
+                    print('📊 [AGENT_PRODUCTS] First few products:');
+                    for (int i = 0;
+                        i <
+                                controller.inventoryAllProductsResult!.products
+                                    .length &&
+                            i < 3;
+                        i++) {
+                      final product =
+                          controller.inventoryAllProductsResult!.products[i];
+                      print(
+                          '📊 [AGENT_PRODUCTS] Product $i: ${product.productName} - ${product.productPrice}');
+                    }
+                  }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomTextField(
-                    controller: controller.searchProductsController,
-                    onChanged: (value) {
-                      controller.add(const SearchProductEvent());
-                    },
-                  ),
-                  Expanded(
-                    child: controller.inventoryAllProductsResult != null
-                        ? ProductsGridView(
-                            productTileType: args.productTileType,
-                            products: state is ProductSearchState ||
-                                    state is ProductSearchFinishedState
-                                ? controller.allProductSearch!
-                                : (controller
-                                    .inventoryAllProductsResult!.products),
-                          )
-                        : const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                  ),
-                ],
-              );
-            }),
-      ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomTextField(
+                        controller: controller.searchProductsController,
+                        onChanged: (value) {
+                          controller.add(const SearchProductEvent());
+                        },
+                      ),
+                      Expanded(
+                        child: controller.inventoryAllProductsResult != null
+                            ? ProductsGridView(
+                                productTileType: args.productTileType,
+                                products: state is ProductSearchState ||
+                                        state is ProductSearchFinishedState
+                                    ? controller.allProductSearch!
+                                    : products,
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                      ),
+                    ],
+                  );
+                }),
+          ),
+        );
+      },
     );
   }
 
