@@ -26,7 +26,6 @@ class CardWalletPageSupabaseDataSourceImpl
 
   @override
   Future<Map<String, dynamic>?> fetchMeeting(String uid) async {
-
     final data = await supabase
         .from(DbTables.agentSetupMeetsTable)
         .select()
@@ -83,20 +82,21 @@ class CardWalletPageSupabaseDataSourceImpl
     log('🔄 [PREFERENCE_UPDATE] Starting preference insertion for user: $hushhId, card: $cardId');
     log('📝 [PREFERENCE_UPDATE] Question: "${preference.question}"');
     log('💬 [PREFERENCE_UPDATE] Answer: "${preference.answers.join(', ')}"');
-    
+
     final data = preference.toJson();
     data.remove('mandatory');
     data.remove('question_id');
-    data.addEntries([MapEntry('hushh_id', hushhId), MapEntry('card_id', cardId)]);
-    
+    data.addEntries(
+        [MapEntry('hushh_id', hushhId), MapEntry('card_id', cardId)]);
+
     try {
       // Insert preference data
       await supabase.from(DbTables.sharedPreferencesTable).insert(data);
       log('✅ [PREFERENCE_UPDATE] Preference data inserted successfully into shared_preferences table');
-      
+
       // Update timestamp in users table based on preference type
       await _updateUserTimestamp(preference.question, hushhId);
-      
+
       log('🎉 [PREFERENCE_UPDATE] Preference update completed successfully!');
     } catch (e) {
       log('❌ [PREFERENCE_UPDATE] Error inserting preference: $e');
@@ -106,31 +106,32 @@ class CardWalletPageSupabaseDataSourceImpl
 
   Future<void> _updateUserTimestamp(String question, String hushhId) async {
     log('⏰ [TIMESTAMP_UPDATE] Analyzing question for timestamp update: "$question"');
-    
+
     final now = DateTime.now().toIso8601String();
     Map<String, dynamic> updateData = {};
     String detectedType = 'unknown';
-    
+
     // Check question type and update corresponding timestamp
-    if (question.toLowerCase().contains('date of birth') || question.toLowerCase().contains('dob')) {
+    if (question.toLowerCase().contains('date of birth') ||
+        question.toLowerCase().contains('dob')) {
       updateData['dob_updated_at'] = now;
       detectedType = 'Date of Birth';
       log('🎂 [TIMESTAMP_UPDATE] Detected DOB preference - updating dob_updated_at timestamp');
     } else {
       log('❓ [TIMESTAMP_UPDATE] No specific timestamp field detected for this question type');
     }
-    
+
     // Update users table if we have data to update
     if (updateData.isNotEmpty) {
       log('📊 [TIMESTAMP_UPDATE] Updating users table with timestamp data: $updateData');
       log('👤 [TIMESTAMP_UPDATE] Target user: $hushhId');
-      
+
       try {
         await supabase
             .from(DbTables.usersTable)
             .update(updateData)
             .eq('hushh_id', hushhId);
-        
+
         log('✅ [TIMESTAMP_UPDATE] Successfully updated $detectedType timestamp in users table!');
         log('🕐 [TIMESTAMP_UPDATE] Timestamp value: $now');
       } catch (e) {
@@ -514,5 +515,28 @@ class CardWalletPageSupabaseDataSourceImpl
         .order('addedAt', ascending: false);
     print('📊 [SUPABASE] Found ${data.length} products for agent');
     return data;
+  }
+
+  @override
+  Future<void> updateProductStockQuantity({
+    required String productSkuUniqueId,
+    required int newStockQuantity,
+    required String hushhId,
+  }) async {
+    print(
+        'Updating stock for $productSkuUniqueId to $newStockQuantity (hushhId: $hushhId)');
+    try {
+      final response = await supabase
+          .from(DbTables.agentProductsTable)
+          .update({'stock_quantity': newStockQuantity})
+          .eq('productSkuUniqueId', productSkuUniqueId)
+          .eq('hushh_id', hushhId);
+      print(
+          'Update filter: productSkuUniqueId=$productSkuUniqueId, hushh_id=$hushhId');
+      print('Update response: $response');
+    } catch (e) {
+      print('Update error: $e');
+    }
+    print('Update call finished');
   }
 }

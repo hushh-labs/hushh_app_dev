@@ -490,4 +490,16 @@ class CardWalletPageRepositoryImpl extends CardWalletPageRepository {
       (value) {},
     );
   }
+
+  Future<Either<ErrorState, void>> updateProductStockQuantity(
+      String productSkuUniqueId, int newStockQuantity, String hushhId) async {
+    return await ErrorHandler.callSupabase(
+      () => cardWalletPagesSupabaseDataSource.updateProductStockQuantity(
+        productSkuUniqueId: productSkuUniqueId,
+        newStockQuantity: newStockQuantity,
+        hushhId: hushhId,
+      ),
+      (value) {},
+    );
+  }
 }

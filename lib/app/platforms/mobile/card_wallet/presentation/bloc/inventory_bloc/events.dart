@@ -75,3 +75,42 @@ class OnProductCardCountDecremented extends InventoryEvent {
 }
 
 class CartClearedEvent extends InventoryEvent {}
+
+class UpdateProductStockQuantityEvent extends InventoryEvent {
+  final String productSkuUniqueId;
+  final int newStockQuantity;
+
+  const UpdateProductStockQuantityEvent({
+    required this.productSkuUniqueId,
+    required this.newStockQuantity,
+  });
+
+  @override
+  List<Object> get props => [productSkuUniqueId, newStockQuantity];
+}
+
+class IncrementProductStockEvent extends InventoryEvent {
+  final String productSkuUniqueId;
+  final int incrementBy;
+
+  const IncrementProductStockEvent({
+    required this.productSkuUniqueId,
+    this.incrementBy = 1,
+  });
+
+  @override
+  List<Object> get props => [productSkuUniqueId, incrementBy];
+}
+
+class DecrementProductStockEvent extends InventoryEvent {
+  final String productSkuUniqueId;
+  final int decrementBy;
+
+  const DecrementProductStockEvent({
+    required this.productSkuUniqueId,
+    this.decrementBy = 1,
+  });
+
+  @override
+  List<Object> get props => [productSkuUniqueId, decrementBy];
+}

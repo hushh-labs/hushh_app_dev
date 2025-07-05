@@ -122,4 +122,10 @@ abstract class CardWalletPageRepository {
       fetchRemoteHealthData(String hushhId);
 
   Future<Either<ErrorState, void>> acceptDataConsentRequest(String requestId);
+
+  Future<Either<ErrorState, void>> updateProductStockQuantity(
+    String productSkuUniqueId,
+    int newStockQuantity,
+    String hushhId,
+  );
 }

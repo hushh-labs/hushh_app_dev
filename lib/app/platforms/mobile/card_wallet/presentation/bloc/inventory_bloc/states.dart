@@ -19,7 +19,14 @@ class FetchedInventoriesState extends InventoryState {}
 
 class FetchProductsResultFromInventoryState extends InventoryState {}
 
-class ProductsResultFetchedFromInventoryState extends InventoryState {}
+class ProductsResultFetchedFromInventoryState extends InventoryState {
+  final List<AgentProductModel> products;
+
+  const ProductsResultFetchedFromInventoryState(this.products);
+
+  @override
+  List<Object> get props => [products];
+}
 
 class CreatingGoogleSheetsInventoryState extends InventoryState {}
 
@@ -55,3 +62,16 @@ class ProductCountDecrementingInCartState extends InventoryState {}
 class ProductCountDecrementedInCartState extends InventoryState {}
 
 class CartClearedState extends InventoryState {}
+
+class UpdatingProductStockState extends InventoryState {}
+
+class ProductStockUpdatedState extends InventoryState {}
+
+class ProductStockUpdateFailedState extends InventoryState {
+  final String error;
+
+  const ProductStockUpdateFailedState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}

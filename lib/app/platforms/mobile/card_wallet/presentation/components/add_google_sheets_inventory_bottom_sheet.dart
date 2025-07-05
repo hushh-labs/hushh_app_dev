@@ -187,7 +187,14 @@ class _AddGoogleSheetsInventoryBottomSheetState
                     children: [
                       TextSpan(
                         text:
-                            'Upload your product inventory file (CSV, XLS, XLSX). Make sure your file follows the required format.',
+                            'Upload your product inventory file (CSV, XLS, XLSX). Make sure your file includes the ',
+                      ),
+                      TextSpan(
+                        text: 'stock_quantity',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1976D2)),
+                      ),
+                      TextSpan(
+                        text: ' field to manage inventory levels.',
                       ),
                     ],
                   ),
@@ -223,7 +230,7 @@ class _AddGoogleSheetsInventoryBottomSheetState
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'product_id,brand,image,price,source,currency,description,product_url,product_title,price_available,additional_image,additional_description',
+                      'product_id,brand,image,price,source,currency,description,product_url,product_title,price_available,additional_image,stock_quantity,additional_description',
                       style: TextStyle(
                         fontSize: 11,
                         color: Color(0xFF6C757D),

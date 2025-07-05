@@ -105,4 +105,5 @@ Future<void> injectUseCases() async {
   sl.registerSingleton(FetchSharedPreferencesUseCase(sl()));
   sl.registerSingleton(InsertSharedPreferenceUseCase(sl()));
   sl.registerSingleton(AcceptDataConsentRequestUseCase(sl()));
+  sl.registerSingleton(UpdateProductStockQuantityUseCase(sl()));
 }

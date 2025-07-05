@@ -17,6 +17,7 @@ class CsvParser {
     'product_title',
     'price_available',
     'additional_image',
+    'stock_quantity',
   ];
 
   static const List<String> optionalHeaders = [
@@ -125,8 +126,8 @@ class CsvParser {
 
   /// Get sample CSV format as string
   static String getSampleCsvFormat() {
-    return '''product_id,brand,image,price,source,currency,description,product_url,product_title,price_available,additional_image,additional_description
-4000216649,Kirkland Signature,https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400,68,Costco,USD,"Kirkland Signature Men's Sneaker; breathable mesh upper, cushioned sockliner",https://www.costco.com/kirkland-signature-men%27s-sneaker.product.4000216649.html,Kirkland Signature Men's Sneaker,Yes,https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400,Water repellant & stain resistant upper
-4000291712,Skechers,https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400,74.99,Costco,USD,Skechers Women's Virtue Swift Fit Hands Free Shoe; stretch‑fit sock design,https://www.costco.com/skechers-women%27s-virtue-swift-fit-hands-free-shoe.product.4000291712.html,Skechers Women's Virtue Swift Fit Hands Free Shoe,Yes,https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400,"Memory foam insole, flexible outsole"''';
+    return '''product_id,brand,image,price,source,currency,description,product_url,product_title,price_available,additional_image,stock_quantity,additional_description
+4000216649,Kirkland Signature,https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400,68,Costco,USD,"Kirkland Signature Men's Sneaker; breathable mesh upper, cushioned sockliner",https://www.costco.com/kirkland-signature-men%27s-sneaker.product.4000216649.html,Kirkland Signature Men's Sneaker,Yes,https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400,25,Water repellant & stain resistant upper
+4000291712,Skechers,https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400,74.99,Costco,USD,Skechers Women's Virtue Swift Fit Hands Free Shoe; stretch‑fit sock design,https://www.costco.com/skechers-women%27s-virtue-swift-fit-hands-free-shoe.product.4000291712.html,Skechers Women's Virtue Swift Fit Hands Free Shoe,Yes,https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400,15,"Memory foam insole, flexible outsole"''';
   }
 }

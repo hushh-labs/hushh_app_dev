@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/agent_product.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/cached_inventory_model.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/inventory_configuration.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/data/models/inventory_schema_response.dart';
@@ -13,9 +14,12 @@ import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/fetch
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/insert_inventory_configuration_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/insert_inventory_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/insert_whatsapp_inventory_use_case.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/update_product_stock_quantity_use_case.dart';
 import 'package:hushh_app/app/shared/config/constants/enums.dart';
 import 'package:hushh_app/app/shared/core/local_storage/local_storage.dart';
 import 'package:hushh_app/app/shared/core/utils/toast_manager.dart';
+import 'package:hushh_app/app/shared/core/inject_dependency/dependencies.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/lookbook_product_bloc/bloc.dart';
 
 part 'events.dart';
 
@@ -49,6 +53,9 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     on<OnProductCardCountIncremented>(onProductCardCountIncremented);
     on<OnProductCardCountDecremented>(onProductCardCountDecremented);
     on<CartClearedEvent>(_onCartCleared);
+    on<UpdateProductStockQuantityEvent>(_onUpdateProductStockQuantity);
+    on<IncrementProductStockEvent>(_onIncrementProductStock);
+    on<DecrementProductStockEvent>(_onDecrementProductStock);
   }
 
   List<InventoryConfiguration>? inventories;
@@ -60,6 +67,9 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   List<String> selectedProductIds = [];
 
   Map<String, int> cart = {};
+
+  int? lastConfigurationId;
+  int? lastBrandId;
 
   FutureOr<void> fetchInventoriesEvent(
       FetchInventoriesEvent event, Emitter<InventoryState> emit) async {
@@ -74,12 +84,17 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
 
   FutureOr<void> fetchProductsInInventoryEvent(
       FetchProductsInInventoryEvent event, Emitter<InventoryState> emit) async {
+    lastConfigurationId = event.configurationId;
+    lastBrandId = event.brandId;
     emit(FetchProductsResultFromInventoryState());
     final result = await fetchProductsResultFromInventoryUseCase(
         brandId: event.brandId, configurationId: event.configurationId);
     result.fold((l) {}, (inventoryProductsResult) {
       this.inventoryProductsResult = inventoryProductsResult;
-      emit(ProductsResultFetchedFromInventoryState());
+      if (inventoryProductsResult != null) {
+        emit(ProductsResultFetchedFromInventoryState(
+            inventoryProductsResult.products));
+      }
     });
   }
 
@@ -215,5 +230,123 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       CartClearedEvent event, Emitter<InventoryState> emit) {
     cart.clear();
     emit(CartClearedState());
+  }
+
+  FutureOr<void> _onUpdateProductStockQuantity(
+      UpdateProductStockQuantityEvent event,
+      Emitter<InventoryState> emit) async {
+    try {
+      // Update the stock quantity locally in the cached inventory
+      if (inventoryProductsResult != null) {
+        final productIndex = inventoryProductsResult!.products.indexWhere(
+          (product) => product.productSkuUniqueId == event.productSkuUniqueId,
+        );
+        if (productIndex != -1) {
+          final updatedProducts =
+              List<AgentProductModel>.from(inventoryProductsResult!.products);
+          final currentProduct = updatedProducts[productIndex];
+          final updatedProduct = AgentProductModel(
+            productImage: currentProduct.productImage,
+            productName: currentProduct.productName,
+            productSkuUniqueId: currentProduct.productSkuUniqueId,
+            productPrice: currentProduct.productPrice,
+            productCurrency: currentProduct.productCurrency,
+            productDescription: currentProduct.productDescription,
+            stockQuantity: event.newStockQuantity,
+            lookbookId: currentProduct.lookbookId,
+            productId: currentProduct.productId,
+            createdAt: currentProduct.createdAt,
+            hushhId: currentProduct.hushhId,
+          );
+          updatedProducts[productIndex] = updatedProduct;
+          inventoryProductsResult = CachedInventoryModel(
+            inventoryProductsResult!.totalCount,
+            updatedProducts,
+          );
+        }
+      }
+      // Update in Supabase
+      final result = await sl<UpdateProductStockQuantityUseCase>()(
+        productSkuUniqueId: event.productSkuUniqueId,
+        newStockQuantity: event.newStockQuantity,
+        hushhId: AppLocalStorage.agent!.hushhId!,
+      );
+      result.fold(
+        (error) => emit(ProductStockUpdateFailedState(error.toString())),
+        (_) {
+          emit(ProductStockUpdatedState());
+          // Refresh products from Supabase
+          if (lastConfigurationId != null && lastBrandId != null) {
+            add(FetchProductsInInventoryEvent(
+                lastConfigurationId!, lastBrandId!));
+          }
+          // Also refresh all products in LookBookProductBloc
+          final agent = AppLocalStorage.agent;
+          if (agent != null) {
+            sl<LookBookProductBloc>()
+                .add(FetchAllProductsEvent(agent.agentBrandId));
+          }
+        },
+      );
+    } catch (e) {
+      emit(ProductStockUpdateFailedState(e.toString()));
+    }
+  }
+
+  FutureOr<void> _onIncrementProductStock(
+      IncrementProductStockEvent event, Emitter<InventoryState> emit) async {
+    // Find current stock quantity
+    int currentStock = 0;
+    if (inventoryProductsResult != null) {
+      final product = inventoryProductsResult!.products.firstWhere(
+        (product) => product.productSkuUniqueId == event.productSkuUniqueId,
+        orElse: () => AgentProductModel(
+          productImage: '',
+          productName: '',
+          productSkuUniqueId: '',
+          productPrice: 0,
+          productCurrency: '',
+          productDescription: '',
+          stockQuantity: 0,
+        ),
+      );
+      currentStock = product.stockQuantity;
+    }
+
+    // Update with incremented stock
+    add(UpdateProductStockQuantityEvent(
+      productSkuUniqueId: event.productSkuUniqueId,
+      newStockQuantity: currentStock + event.incrementBy,
+    ));
+  }
+
+  FutureOr<void> _onDecrementProductStock(
+      DecrementProductStockEvent event, Emitter<InventoryState> emit) async {
+    // Find current stock quantity
+    int currentStock = 0;
+    if (inventoryProductsResult != null) {
+      final product = inventoryProductsResult!.products.firstWhere(
+        (product) => product.productSkuUniqueId == event.productSkuUniqueId,
+        orElse: () => AgentProductModel(
+          productImage: '',
+          productName: '',
+          productSkuUniqueId: '',
+          productPrice: 0,
+          productCurrency: '',
+          productDescription: '',
+          stockQuantity: 0,
+        ),
+      );
+      currentStock = product.stockQuantity;
+    }
+
+    // Ensure stock doesn't go below 0
+    final newStock = (currentStock - event.decrementBy).clamp(0, currentStock);
+
+    // Update with decremented stock
+    add(UpdateProductStockQuantityEvent(
+      productSkuUniqueId: event.productSkuUniqueId,
+      newStockQuantity: newStock,
+    ));
   }
 }

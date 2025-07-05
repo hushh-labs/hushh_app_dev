@@ -59,7 +59,7 @@ abstract class CardWalletPageSupabaseDataSource {
 
   Future<Map<String, dynamic>?> fetchProductsResultFromInventory(
       int brandId, int configurationId);
-  
+
   Future<List<Map<String, dynamic>>> fetchAgentProducts(String hushhId);
 
   Future<void> insertInventory(
@@ -95,5 +95,12 @@ abstract class CardWalletPageSupabaseDataSource {
   Future<List<Map<String, dynamic>>> fetchSharedPreferences(
       String hushhId, int cardId);
 
-  Future<void> insertSharedPreference(UserPreference preference, String hushhId, int cardId);
+  Future<void> insertSharedPreference(
+      UserPreference preference, String hushhId, int cardId);
+
+  Future<void> updateProductStockQuantity({
+    required String productSkuUniqueId,
+    required int newStockQuantity,
+    required String hushhId,
+  });
 }

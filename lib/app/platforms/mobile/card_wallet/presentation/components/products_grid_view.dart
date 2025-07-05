@@ -65,7 +65,9 @@ class ProductsGridView extends StatelessWidget {
                       OnProductCardCountDecremented(productSkuUniqueId: skuId));
                 }
               },
-              productTileType: productTileType,
+              productTileType: productTileType == ProductTileType.editProducts
+                  ? ProductTileType.editProducts
+                  : productTileType,
             );
           },
         );

@@ -170,22 +170,6 @@ class _AgentProductsState extends State<AgentProducts> {
                                 : (controller
                                     .inventoryAllProductsResult!.products),
                           )
-                        // ? ProductsListView(
-                        //     shouldDismiss: shouldSelectProducts == false,
-                        //     onDelete: (product) {
-                        //       // (lookbookOpened
-                        //       //         ? (controller.lookbookProducts!)
-                        //       //         : (controller.allProducts!))
-                        //       //     .remove(product);
-                        //       // controller.add(
-                        //       //     DeleteProductEvent(
-                        //       //         product, context, args.item3));
-                        //     },
-                        //     shouldSelectProducts: shouldSelectProducts,
-                        //     products: state is ProductSearchState ? controller.allProductSearch! : (lookbookOpened
-                        //         ? (controller.lookbookProducts!)
-                        //         : (controller.inventoryAllProductsResult!.products)),
-                        //   )
                         : const Center(
                             child: CircularProgressIndicator(),
                           ),

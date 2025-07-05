@@ -11,6 +11,7 @@ class AgentProductModel {
   final double productPrice;
   final String productCurrency;
   final String productDescription;
+  final int stockQuantity;
   final String? lookbookId;
   final String? productId;
   final String? hushhId;
@@ -23,6 +24,7 @@ class AgentProductModel {
       required this.productPrice,
       required this.productCurrency,
       required this.productDescription,
+      this.stockQuantity = 0,
       this.lookbookId,
       this.productId,
       this.createdAt,
@@ -36,23 +38,36 @@ class AgentProductModel {
     int priceIndex = csv[0].indexOf(columnsMap['product_price_column']);
     int descriptionIndex =
         csv[0].indexOf(columnsMap['product_description_column']);
+    int stockQuantityIndex =
+        csv[0].indexOf(columnsMap['stock_quantity_column']);
     List<AgentProductModel> products = [];
     for (int i = 1; i < csv.length; i++) {
       double productPrice = 420;
+      int stockQuantity = 0;
 
       try {
         productPrice = double.parse(csv[i][priceIndex].toString());
       } catch (e) {
         print("Error parsing product price for row $i: $e");
       }
+
+      try {
+        if (stockQuantityIndex != -1 && stockQuantityIndex < csv[i].length) {
+          stockQuantity = int.parse(csv[i][stockQuantityIndex].toString());
+        }
+      } catch (e) {
+        print("Error parsing stock quantity for row $i: $e");
+      }
+
       products.add(AgentProductModel(
-        productCurrency: sl<HomePageBloc>().currency?.shorten() ??
-            defaultCurrency.shorten(),
+        productCurrency:
+            sl<HomePageBloc>().currency?.shorten() ?? defaultCurrency.shorten(),
         productDescription: csv[i][descriptionIndex].toString(),
         productImage: csv[i][imageIndex].toString(),
         productName: csv[i][nameIndex].toString(),
         productSkuUniqueId: csv[i][skuIndex].toString(),
         productPrice: productPrice,
+        stockQuantity: stockQuantity,
       ));
     }
 
@@ -68,6 +83,7 @@ class AgentProductModel {
       'productDescription': productDescription,
       'productSkuUniqueId': productSkuUniqueId,
       'productPrice': productPrice,
+      'stockQuantity': stockQuantity,
       'lookbook_id': lookbookId ?? this.lookbookId,
       'productId': productId ?? this.productId,
       'hushh_id': hushhId ?? this.hushhId
@@ -82,6 +98,7 @@ class AgentProductModel {
         productDescription: json['productDescription'],
         productSkuUniqueId: json['productSkuUniqueId'],
         productPrice: json['productPrice'].toDouble(),
+        stockQuantity: json['stock_quantity'] ?? 0,
         productId: json['productId'],
         hushhId: json['hushh_id'],
         lookbookId: json['lookbook_id']);
@@ -96,31 +113,35 @@ class AgentProductModel {
         productSkuUniqueId:
             json['product_sku_unique_id_identifier']?.toString() ?? '',
         productPrice: json['product_price_identifier']?.toDouble() ?? 0,
+        stockQuantity: json['stock_quantity'] ?? 0,
         productId: json['product_id'],
         hushhId: json['hushh_id'],
         lookbookId: json['lookbook_id']);
   }
 
   factory AgentProductModel.fromCachedInventoryJson(Map<String, dynamic> json) {
-    print('📊 [MODEL] Parsing product: ${json['productName']} - ${json['productPrice']}');
+    print(
+        '📊 [MODEL] Parsing product: ${json['productName']} - ${json['productPrice']}');
     return AgentProductModel(
         productCurrency: json['productCurrency'] ?? 'INR',
         productImage: json['productImage'] ?? '',
         productName: json['productName'] ?? 'N/A',
         productDescription: json['productDescription'] ?? 'N/A',
         productSkuUniqueId: json['productSkuUniqueId']?.toString() ?? '',
-        productPrice: (json['productPrice'] is num) ? json['productPrice'].toDouble() : 0.0,
+        productPrice: (json['productPrice'] is num)
+            ? json['productPrice'].toDouble()
+            : 0.0,
+        stockQuantity: json['stock_quantity'] ?? 0,
         productId: json['productId'],
         hushhId: json['hushh_id'],
-        createdAt: json['addedAt'] != null
-            ? DateTime.tryParse(json['addedAt'])
-            : null,
+        createdAt:
+            json['addedAt'] != null ? DateTime.tryParse(json['addedAt']) : null,
         lookbookId: json['lookbook_id']);
   }
 
   // Factory method to create from CSV row
   factory AgentProductModel.fromCsvRow(
-    Map<String, dynamic> csvRow, 
+    Map<String, dynamic> csvRow,
     String hushhId,
   ) {
     // Get a working placeholder image based on product type
@@ -138,24 +159,29 @@ class AgentProductModel {
         return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop';
       }
     }
-    
+
     String productName = csvRow['product_title']?.toString() ?? 'N/A';
     String originalImage = csvRow['image']?.toString() ?? '';
-    
+
     // Use placeholder if original image is from costco.com (which are fake)
-    String finalImage = originalImage.contains('costco.com') 
+    String finalImage = originalImage.contains('costco.com')
         ? getPlaceholderImage(productName)
         : originalImage;
-    
+
     return AgentProductModel(
       productImage: finalImage,
       productName: productName,
-      productSkuUniqueId: csvRow['product_id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      productSkuUniqueId: csvRow['product_id']?.toString() ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       productPrice: double.tryParse(csvRow['price']?.toString() ?? '0') ?? 0,
       productCurrency: csvRow['currency']?.toString() ?? 'USD',
       productDescription: csvRow['description']?.toString() ?? '',
+      stockQuantity:
+          int.tryParse(csvRow['stock_quantity']?.toString() ?? '0') ?? 0,
       hushhId: hushhId,
-      productId: DateTime.now().millisecondsSinceEpoch.toString() + '_' + (csvRow['product_id']?.toString() ?? ''),
+      productId: DateTime.now().millisecondsSinceEpoch.toString() +
+          '_' +
+          (csvRow['product_id']?.toString() ?? ''),
     );
   }
 }

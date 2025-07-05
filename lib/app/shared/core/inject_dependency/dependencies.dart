@@ -86,6 +86,7 @@ import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/updat
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/update_look_book_field_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/update_meet_info_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/user_installed_card_exists_use_case.dart';
+import 'package:hushh_app/app/platforms/mobile/card_wallet/domain/usecases/update_product_stock_quantity_use_case.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/agent_card_wallet/bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/agent_task_bloc/bloc.dart';
 import 'package:hushh_app/app/platforms/mobile/card_wallet/presentation/bloc/card_wallet/bloc.dart';
